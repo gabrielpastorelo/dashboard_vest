@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banco de questões — Matemática nos vestibulares</title>
+<style>
+:root{
+  --ink:#16202b;
+  --ink-2:#41505f;
+  --ink-3:#77869a;
+  --paper:#f7f8f6;
+  --panel:#ffffff;
+  --rule:#d9ddd8;
+  --rule-2:#eceee9;
+  --arit:#b06a1e;
+  --alg:#2c5c8f;
+  --geo:#2b7a58;
+  --dad:#6a4a94;
+  --out:#6b7280;
+  --focus:#c2410c;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Helvetica Neue",Helvetica,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px 90px}
+
+/* ---------- header ---------- */
+header{padding:44px 0 24px;border-bottom:2px solid var(--ink)}
+h1{
+  font-size:30px;line-height:1.15;margin:0 0 10px;
+  font-weight:700;letter-spacing:-0.02em;max-width:22ch;
+}
+.sub{color:var(--ink-2);max-width:62ch;margin:0}
+.coverage{
+  margin-top:18px;padding:12px 14px;background:#fdf6e8;
+  border:1px solid #e8d5ac;border-radius:3px;
+  font-size:13.5px;color:#5c4a26;max-width:76ch;
+}
+.coverage b{color:#3d3115}
+
+/* ---------- filters ---------- */
+.filters{
+  position:sticky;top:0;z-index:20;background:var(--paper);
+  padding:14px 0;border-bottom:1px solid var(--rule);
+  display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11.5px;color:var(--ink-3);letter-spacing:.02em}
+select,input[type=search]{
+  font:inherit;font-size:14px;color:var(--ink);
+  background:var(--panel);border:1px solid var(--rule);
+  border-radius:3px;padding:7px 9px;min-width:150px;
+}
+input[type=search]{min-width:230px}
+select:focus,input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus)}
+.clearbtn{
+  font:inherit;font-size:13.5px;background:none;border:1px solid var(--rule);
+  border-radius:3px;padding:7px 12px;cursor:pointer;color:var(--ink-2);
+}
+.clearbtn:hover{border-color:var(--ink-2);color:var(--ink)}
+.count{margin-left:auto;font-size:13.5px;color:var(--ink-2);padding-bottom:8px}
+.count b{color:var(--ink);font-size:16px}
+
+/* ---------- answer sheet ---------- */
+section{padding-top:34px}
+h2{font-size:15px;font-weight:700;margin:0 0 4px;letter-spacing:-0.01em}
+.hint{font-size:13px;color:var(--ink-3);margin:0 0 16px;max-width:64ch}
+
+.sheet{display:block}
+.banca{margin-bottom:30px}
+.bname{font-size:15px;margin:0 0 12px;font-weight:700;letter-spacing:-0.01em;
+  padding-bottom:7px;border-bottom:2px solid var(--ink)}
+.bname span{font-weight:400;color:var(--ink-3);font-size:13px}
+.sheetrow{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.col{flex:1;min-width:148px}
+.col h4{
+  font-size:12.5px;margin:0 0 8px;font-weight:700;color:var(--ink-2);
+  padding-bottom:5px;border-bottom:1px solid var(--rule);
+}
+.col h4 span{font-weight:400;color:var(--ink-3)}
+.cell{
+  display:flex;align-items:center;gap:8px;width:100%;
+  background:var(--panel);border:1px solid var(--rule-2);
+  border-left:4px solid var(--out);
+  border-radius:2px;padding:6px 8px;margin-bottom:4px;
+  cursor:pointer;text-align:left;font:inherit;
+  transition:border-color .12s, background .12s;
+}
+.cell:hover{background:#eef2f6;border-color:var(--ink-3)}
+.cell:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.cell.sel{background:#e8eef4;border-color:var(--ink)}
+.cell .num{
+  font-family:"SFMono-Regular",Menlo,Consolas,monospace;
+  font-size:12px;color:var(--ink-3);min-width:20px;
+}
+.cell .tp{font-size:12.5px;color:var(--ink-2);line-height:1.25;overflow:hidden}
+.cell.dim{opacity:.22}
+
+/* ---------- topic bars ---------- */
+.bars{margin-top:6px}
+.bar{
+  display:grid;grid-template-columns:1fr 42px;gap:10px;align-items:center;
+  width:100%;background:none;border:0;border-bottom:1px solid var(--rule-2);
+  padding:5px 0;cursor:pointer;font:inherit;text-align:left;
+}
+.bar:hover .blabel{color:var(--focus)}
+.bar:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.bar.on .blabel{font-weight:700}
+.btrack{display:flex;align-items:center;gap:9px}
+.blabel{font-size:13px;color:var(--ink-2);min-width:0;flex:0 0 auto;width:270px}
+.bfill{height:11px;border-radius:1px;min-width:2px}
+.bnum{font-size:13px;color:var(--ink-2);text-align:right;
+  font-family:"SFMono-Regular",Menlo,Consolas,monospace}
+
+/* ---------- list ---------- */
+.qlist{margin-top:6px;border-top:1px solid var(--rule)}
+.q{border-bottom:1px solid var(--rule-2);padding:14px 0 14px 14px;border-left:4px solid var(--out)}
+.q.hl{background:#fffbf2}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;margin-bottom:5px}
+.tag{
+  font-size:11.5px;color:var(--ink-2);background:#eef0ed;
+  border-radius:2px;padding:2px 7px;
+}
+.tag.src{background:none;border:1px solid var(--rule);color:var(--ink-3)}
+.qtopic{font-size:13.5px;font-weight:700}
+.qdesc{margin:0;color:var(--ink-2);max-width:78ch;font-size:14px}
+.qlink{
+  display:inline-block;margin-top:7px;font-size:12.5px;color:var(--ink-3);
+  text-decoration:none;border-bottom:1px solid var(--rule);
+}
+.qlink:hover{color:var(--focus);border-color:var(--focus)}
+.empty{padding:40px 0;color:var(--ink-3);max-width:56ch}
+
+/* ---------- painel de leitura ---------- */
+.scrim{position:fixed;inset:0;background:rgba(22,32,43,.45);z-index:40;
+  opacity:0;pointer-events:none;transition:opacity .15s}
+.scrim.open{opacity:1;pointer-events:auto}
+.panel{
+  position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);z-index:50;
+  background:var(--panel);border-left:1px solid var(--rule);
+  box-shadow:-14px 0 40px rgba(22,32,43,.13);
+  transform:translateX(100%);transition:transform .2s ease;
+  display:flex;flex-direction:column;
+}
+.panel.open{transform:none}
+.phead{padding:20px 24px 14px;border-bottom:2px solid var(--ink);flex:none}
+.pclose{position:absolute;top:14px;right:16px;background:none;border:0;
+  font:inherit;font-size:26px;line-height:1;color:var(--ink-3);cursor:pointer;padding:4px 8px}
+.pclose:hover{color:var(--ink)}
+.pclose:focus-visible{outline:2px solid var(--focus)}
+.pbody{padding:20px 24px 40px;overflow-y:auto;flex:1}
+.pkicker{font-size:12.5px;color:var(--ink-3);margin:0 0 6px}
+.ptitle{font-size:19px;font-weight:700;margin:0;letter-spacing:-0.01em;padding-right:36px}
+.pblock{margin:0 0 22px}
+.pblock h4{font-size:12.5px;color:var(--ink-3);margin:0 0 6px;font-weight:400}
+.pblock p{margin:0;max-width:60ch}
+.answer{background:#eef4ef;border-left:4px solid var(--geo);padding:11px 14px;border-radius:2px}
+.answer p{font-weight:700}
+.pnote{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--rule-2);
+  padding-top:14px;max-width:60ch}
+.pnote a{color:var(--ink-2)}
+.pnav{display:flex;gap:8px;margin-bottom:20px}
+.pnav button{font:inherit;font-size:13px;background:none;border:1px solid var(--rule);
+  border-radius:3px;padding:6px 12px;cursor:pointer;color:var(--ink-2)}
+.pnav button:hover:not(:disabled){border-color:var(--ink-2);color:var(--ink)}
+.pnav button:disabled{opacity:.4;cursor:default}
+.openbtn{display:inline-block;margin-top:8px;font-size:13px;background:none;
+  border:1px solid var(--rule);border-radius:3px;padding:5px 11px;cursor:pointer;
+  font-family:inherit;color:var(--ink-2)}
+.openbtn:hover{border-color:var(--focus);color:var(--focus)}
+
+/* ---------- legend / footer ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0 0;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2)}
+.sw{width:13px;height:13px;border-radius:2px;flex:none}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--rule);
+  font-size:13px;color:var(--ink-3);max-width:76ch}
+footer p{margin:0 0 9px}
+@media (max-width:640px){
+  h1{font-size:24px}
+  .blabel{width:150px;font-size:12px}
+  .count{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Banco de questões de matemática dos vestibulares</h1>
+  <p class="sub">Cada questão foi lida e classificada individualmente a partir do caderno original da prova. Filtre por prova, ano ou tópico — ou clique direto numa questão da folha abaixo.</p>
+  <div class="coverage">
+    <b>190 questões, classificadas uma a uma — Unicamp, Fuvest e Unesp, 1ª fase, de 2021 a 2026.</b>
+    As três bancas cobrem os mesmos seis anos, então as comparações entre elas são diretas.
+    O ENEM ainda está em leitura. Nada nesta página vem de estimativa: se uma prova não foi lida, ela não está no banco.
+  </div>
+</header>
+
+<div class="filters">
+  <div class="field">
+    <label for="fProva">Prova</label>
+    <select id="fProva"><option value="">Todas</option></select>
+  </div>
+  <div class="field">
+    <label for="fAno">Ano</label>
+    <select id="fAno"><option value="">Todos</option></select>
+  </div>
+  <div class="field">
+    <label for="fTopico">Tópico</label>
+    <select id="fTopico"><option value="">Todos</option></select>
+  </div>
+  <div class="field">
+    <label for="fBusca">Buscar no enunciado</label>
+    <input type="search" id="fBusca" placeholder="parábola, PA, probabilidade, nº 54…">
+  </div>
+  <button class="clearbtn" id="clear">Limpar filtros</button>
+  <div class="count"><b id="cN">190</b> <span id="cLabel">questões</span></div>
+</div>
+
+<section>
+  <h2>Folha de questões</h2>
+  <p class="hint">Agrupada por banca e por ano, na ordem em que as questões aparecem na prova. A cor indica a grande área; clique numa questão para abri-la aqui mesmo.</p>
+  <div class="sheet" id="sheet"></div>
+  <ul class="legend">
+    <li><span class="sw" style="background:var(--arit)"></span>Aritmética e proporção</li>
+    <li><span class="sw" style="background:var(--alg)"></span>Álgebra e funções</li>
+    <li><span class="sw" style="background:var(--geo)"></span>Geometria e trigonometria</li>
+    <li><span class="sw" style="background:var(--dad)"></span>Combinatória, probabilidade e estatística</li>
+    <li><span class="sw" style="background:var(--out)"></span>Outros</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Frequência por tópico</h2>
+  <p class="hint">Contagem dentro do recorte filtrado. Clique num tópico para filtrar por ele.</p>
+  <div class="bars" id="bars"></div>
+</section>
+
+<section>
+  <h2>Questões</h2>
+  <p class="hint">Abra qualquer questão para ver o problema reescrito, o caminho de resolução e a resposta, sem sair da página. Use as setas do teclado para percorrer o recorte filtrado.</p>
+  <div class="qlist" id="qlist"></div>
+</section>
+
+<footer>
+  <p><b>Como a classificação foi feita.</b> Cada caderno de prova foi lido na íntegra e cada questão de matemática recebeu um tópico principal. Quando uma questão combina dois assuntos, o tópico registrado é o que governa a resolução, e o segundo aparece no resumo.</p>
+  <p><b>Dois rótulos fora da sua lista de 21.</b> "Funções: composição, inversa e análise gráfica" e "Raciocínio lógico" precisaram ser criados: há questões que não cabem em nenhum dos 21 tópicos sem forçar a barra. Estão marcados para você decidir se prefere fundi-los a outra categoria.</p>
+  <p><b>Modelos de prova.</b> A Unicamp aplica vários modelos por ano, com a mesma prova em ordem embaralhada. A numeração aqui é a do modelo indicado em cada questão, então o número pode diferir do caderno de outro candidato.</p>
+</footer>
+
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="pTitle" tabindex="-1">
+  <div class="phead">
+    <button class="pclose" id="pClose" aria-label="Fechar">&times;</button>
+    <p class="pkicker" id="pKicker"></p>
+    <h3 class="ptitle" id="pTitle"></h3>
+  </div>
+  <div class="pbody">
+    <div class="pnav">
+      <button id="pPrev">&larr; Anterior</button>
+      <button id="pNext">Seguinte &rarr;</button>
+    </div>
+    <div class="pblock">
+      <h4>O que a questão pede</h4>
+      <p id="pEnun"></p>
+    </div>
+    <div class="pblock">
+      <h4>Como resolver</h4>
+      <p id="pResol"></p>
+    </div>
+    <div class="pblock answer" id="pAnsBlock">
+      <h4>Resposta</h4>
+      <p id="pAns"></p>
+    </div>
+    <p class="pnote" id="pNote"></p>
+  </div>
+</aside>
+
+<script>
+const FAM = {arit:'var(--arit)', alg:'var(--alg)', geo:'var(--geo)', dad:'var(--dad)', out:'var(--out)'};
+const T = {
+  conj:['Conjuntos numéricos e operações','arit'],
+  razao:['Razão, proporção e porcentagem','arit'],
+  fin:['Matemática financeira','arit'],
+  afim:['Função afim (1º grau)','alg'],
+  quad:['Função quadrática (2º grau)','alg'],
+  expo:['Função exponencial','alg'],
+  log:['Função logarítmica','alg'],
+  mod:['Função modular','alg'],
+  fgen:['Funções: composição, inversa e análise gráfica','alg'],
+  poli:['Polinômios e equações polinomiais','alg'],
+  sist:['Sistemas lineares','alg'],
+  matr:['Matrizes e determinantes','alg'],
+  prog:['Progressões (PA e PG)','alg'],
+  gplana:['Geometria plana','geo'],
+  gesp:['Geometria espacial','geo'],
+  ganal:['Geometria analítica','geo'],
+  trigret:['Trigonometria no triângulo retângulo','geo'],
+  trig:['Trigonometria (leis e funções trigonométricas)','geo'],
+  compl:['Números complexos','alg'],
+  comb:['Análise combinatória','dad'],
+  prob:['Probabilidade','dad'],
+  est:['Estatística','dad'],
+  logica:['Raciocínio lógico','out']
+};
+const SRC = {
+  'Unicamp 2025':['Q/Z','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unicamp/2025_1fase/unicamp2025_1fase_prova_QZ.pdf'],
+  'Unicamp 2024':['S/W','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unicamp/2024_1fase/unicamp2024_1fase_prova_SW.pdf'],
+  'Unicamp 2023':['T/W','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unicamp/2023_1fase/unicamp2023_1fase_prova_TW.pdf'],
+  'Unicamp 2022':['Q/X','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unicamp/2022_1fase/unicamp2022_1fase_prova_QX.pdf'],
+  'Unicamp 2021':['J/L','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unicamp/2021_1fase/1dia/unicamp2021_1fase_1dia_prova_JL.pdf'],
+  'Fuvest 2025':['V1','https://www.fuvest.br/wp-content/uploads/fuvest2025_primeira_fase_prova_V1.pdf'],
+  'Fuvest 2024':['V','https://www.fuvest.br/wp-content/uploads/fuvest2024_primeira_fase_prova_V.pdf'],
+  'Fuvest 2023':['V','https://www.fuvest.br/wp-content/uploads/fuvest2023_primeira_fase_prova_V.pdf'],
+  'Fuvest 2022':['V','https://www.fuvest.br/wp-content/uploads/fuvest_2022_primeira_fase_tipo_V.pdf'],
+  'Fuvest 2021':['V','https://arquivos.qconcursos.com/prova/arquivo_prova/78953/fuvest-2021-usp-vestibular-prova.pdf'],
+  'Unesp 2024':['Versão 1 (VNSP2303) — aplicada em 15.11.2023','https://sisq.elitecampinas.com.br/GabaritoVestibulares/VisualizarProvaCompleta?vestibular=unesp&ano=2024&dia=1&pagina=9&prova_id=144'],
+  'Unesp 2023':['Versão 1 (vnsp2206) — aplicada em 15.11.2022','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unesp/2023/1fase/UNESP2023_1fase_prova.pdf'],
+  'Unesp 2022':['Versão 1 (vnsp2105) — dia 1, Grupo 1 / biológicas','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unesp/2022/1fase/1dia/UNESP2022_1fase_prova.pdf'],
+  'Unesp 2021':['Versão 1 (vnsp2006) — dia 1, Grupo 1 / biológicas','https://sisq.elitecampinas.com.br/GabaritoVestibulares/VisualizarProvaCompleta?vestibular=unesp&ano=2021&dia=1&pagina=9&prova_id=38'],
+  'Unesp 2026':['Versão 1 (VNSP2504)','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unesp/2026/1fase/UNESP2026_1fase_prova.pdf'],
+  'Unesp 2025':['Versão 1 (VNSP2404)','https://www.curso-objetivo.br/vestibular/resolucao-comentada/unesp/2025/1fase/UNESP2025_1fase_prova.pdf'],
+  'Fuvest 2026':['V1','https://www.curso-objetivo.br/vestibular/resolucao-comentada/fuvest/2026_1fase/fuvest2026_1fase_prova_V1.pdf'],
+  'Unicamp 2026':['Q/X','https://www.comvest.unicamp.br/vest2026/F1/f12026Q_X.pdf']
+};
+
+const DATA = [
+// ---- 2025 ----
+{p:'Unicamp',a:2025,n:47,t:'est',d:'Leitura de gráfico de barras do PISA 2022 com os percentuais de alunos de baixo e alto desempenho em Matemática, Leitura e Ciências, comparando Brasil e média da OCDE.',r:"Ler as duas barras do Brasil e as duas da média da OCDE em cada área e comparar os percentuais pedidos em cada alternativa. Não há conta: é interpretação de barras empilhadas."},
+{p:'Unicamp',a:2025,n:48,t:'prob',d:'Sorteio de um número de 1 a 2025: probabilidade de ser múltiplo de 3 ou de 7. Exige o princípio da inclusão-exclusão.',r:"Inclusão-exclusão: múltiplos de 3 são 675, de 7 são 289, de 21 são 96. Favoráveis = 675+289−96 = 868.",s:"868/2025"},
+{p:'Unicamp',a:2025,n:49,t:'razao',d:'Celular de R$ 2.000 com dois reajustes sucessivos de 10% e, depois, desconto de 20%. Valor final pago — acréscimos e descontos sucessivos.',r:"Fatores multiplicativos encadeados: 2000 · 1,10 · 1,10 · 0,80 = 2000 · 1,21 · 0,80.",s:"R$ 1.936,00"},
+{p:'Unicamp',a:2025,n:50,t:'trig',d:'Cálculo de sen(π/12) a partir da fórmula do cosseno do arco metade e da relação fundamental da trigonometria.',r:"De cos(π/6)=√3/2, o arco metade dá cos(π/12)=√((2+√3)/4). Pela relação fundamental, sen²(π/12)=1−(2+√3)/4=(2−√3)/4.",s:"√(2−√3)/2"},
+{p:'Unicamp',a:2025,n:51,t:'prob',d:'Diagrama de Venn com 65 sucos de até três sabores: probabilidade de um copo sorteado ter exatamente dois sabores. Combina conjuntos e probabilidade.',r:"Somar as regiões do diagrama que pertencem a exatamente duas elipses (sem o miolo triplo) e dividir por 65. As incógnitas do diagrama saem do total de 65 copos.",s:"5/13"},
+{p:'Unicamp',a:2025,n:52,t:'mod',d:'A partir de |x−2| ≤ 2 e |y−3| ≤ 1, decidir qual conclusão sobre x e y é necessariamente verdadeira. Inequações modulares e estimativa de soma.',r:"|x−2|≤2 dá 0≤x≤4; |y−3|≤1 dá 2≤y≤4. Somando os extremos superiores, x+y não passa de 8. As outras alternativas falham em algum ponto do retângulo.",s:"x + y ≤ 8"},
+{p:'Unicamp',a:2025,n:53,t:'gplana',d:'Arruelas em forma de coroa circular (diâmetros 60 cm e 40 cm): número mínimo de latas de tinta para pintar 90 peças de um só lado.',r:"Área da coroa = π(R²−r²) com R=30 cm e r=20 cm. Multiplicar por 90, converter cm² em m² (dividir por 10.000) e dividir pela cobertura da lata, arredondando para cima."},
+{p:'Unicamp',a:2025,n:54,t:'quad',d:'Com f(x)=x−2 e g(x)=x²−4x, quantos inteiros satisfazem g(f(x)) < 0. Composição de funções e inequação do 2º grau.',r:"g(f(x)) = (x−2)²−4(x−2) = (x−2)(x−6), negativo em 2<x<6. Inteiros nesse intervalo: 3, 4 e 5.",s:"3"},
+{p:'Unicamp',a:2025,n:55,t:'gplana',d:'Triângulo com dois quadrados no interior; achar o lado EF sabendo AG = 4 cm e GH = 3 cm. Resolve-se por semelhança de triângulos.',r:"Os dois quadrados criam triângulos semelhantes ao triângulo ABC. Montar a proporção entre lado do quadrado e a altura correspondente para cada um e comparar."},
+{p:'Unicamp',a:2025,n:56,t:'prog',d:'PA (aₙ) e a sequência (sₙ) das somas parciais: determinar a razão sabendo que 168, 220 e 279 são termos consecutivos de (sₙ).',r:"Diferenças consecutivas de (sₙ) são termos de (aₙ): 220−168 = 52 e 279−220 = 59. A razão da PA é a diferença desses dois termos.",s:"7"},
+{p:'Unicamp',a:2025,n:57,t:'quad',d:'Parábola y = ax²+bx+c passando por três pontos dados; calcular o produto a·b·c. Resolve por sistema linear 3×3.',r:"P=(0,−4) dá c=−4. Substituindo Q e M chega-se a 4a+2b=3 e 4a−2b=9; somando, a=3/2 e b=−3/2.",s:"9"},
+{p:'Unicamp',a:2025,n:58,t:'trig',d:'Identificar o gráfico de Q(t) = 20 + 2sen(t) − 4cos(t), quantidade de poluente numa lagoa. Amplitude e valor médio de soma de senoides.',r:"Escrever 2sen t − 4cos t como uma única senoide de amplitude √(4+16)=√20≈4,5. O gráfico oscila em torno de 20, entre ≈15,5 e ≈24,5, com período 2π, e começa em Q(0)=16."},
+// ---- 2024 ----
+{p:'Unicamp',a:2024,n:54,t:'gplana',d:'Pizzas circulares com preço proporcional à área: qual o diâmetro d para que quatro pizzas individuais custem o mesmo que uma de 20 cm.',r:"Preço proporcional à área: 4·π(d/2)² = π·10². Logo d² = 100.",s:"10 cm"},
+{p:'Unicamp',a:2024,n:55,t:'logica',d:'Duas condicionais sobre Ana, Bruna e Carol (patins ou bicicleta); que conclusão é necessariamente verdadeira sabendo que Carol andou de patins.',r:"Da segunda regra, Bruna de patins exigiria Carol de bicicleta. Como Carol andou de patins, Bruna não andou. Sobre Ana nada se conclui (a primeira regra só vai de Ana para Carol).",s:"Bruna não andou de patins"},
+{p:'Unicamp',a:2024,n:56,t:'sist',d:'Feira de adoção com cachorros, gatos e pintinhos; duas relações entre as quantidades levam a um sistema. Quantos gatos havia.',r:"g+p = c+4 e g+c = p+6. Somando as duas, p e c se cancelam e sobra 2g = 10.",s:"5"},
+{p:'Unicamp',a:2024,n:57,t:'quad',d:'Entrada de caverna em forma de parábola invertida (2 m de largura, 2,5 m de altura); altura máxima de uma caixa de 1 m de largura que passa.',r:"Com origem no topo, y = 2,5(1−x²) para −1≤x≤1. A caixa de 1 m ocupa x=±0,5, onde y = 2,5·0,75.",s:"15/8 m"},
+{p:'Unicamp',a:2024,n:58,t:'gplana',d:'Graveto de 50 cm partido em a ≤ b ≤ c com b = a+2 que não forma triângulo; maior valor possível de a. Desigualdade triangular.',r:"Não formar triângulo com a ≤ b ≤ c significa a+b ≤ c. Com b=a+2 e c=50−a−b, isso vira 2a+2 ≤ 48−2a, ou seja, a ≤ 11,5.",s:"11,5 cm"},
+{p:'Unicamp',a:2024,n:59,t:'conj',d:'Interseção de dois conjuntos definidos por inequações (x²−2x−24 < 0 e 2x−7 ≤ 0); quantos inteiros pertencem a A ∩ B.',r:"x²−2x−24<0 dá −4<x<6; 2x−7≤0 dá x≤3,5. A interseção é −4<x≤3,5, que contém os inteiros de −3 a 3.",s:"7"},
+{p:'Unicamp',a:2024,n:60,t:'comb',d:'Escolha de dois itens entre 5 frutas, 3 pirulitos e 2 bolos, com a restrição "se pegar pirulito, pegue também fruta". Contagem com condição.',r:"Total sem restrição: C(10,2)=45. Casos proibidos: dois pirulitos, C(3,2)=3, e pirulito com bolo, 3·2=6. Restam 45−9.",s:"36"},
+{p:'Unicamp',a:2024,n:61,t:'prob',d:'Sacola com pedrinhas brancas e pretas após várias retiradas; probabilidade de as próximas duas serem brancas. Eventos sem reposição.',r:"Sobraram 25 brancas e 15 pretas, total 40. Sem reposição: (25/40)·(24/39).",s:"5/13"},
+{p:'Unicamp',a:2024,n:62,t:'poli',d:'Com p(x) = x + 2024, resolver p(x)+p(2x)+…+p(2024x) = 0 e localizar o intervalo da solução. Usa a soma de uma PA nos coeficientes.',r:"A soma vira (1+2+…+2024)x + 2024·2024 = 0. O coeficiente é a soma da PA, 2024·2025/2, então x = −2·2024/2025 ≈ −1,999.",s:"−2 < x < 0"},
+{p:'Unicamp',a:2024,n:63,t:'gplana',d:'Trapézio ABCD com AB = 1 e CD = 5 e pontos médios M e N; área do trapézio sabendo que a área de MBN é 1. Razão entre áreas.',r:"MB é metade de AB e N é médio de BC, então [MBN] = ¼·[ABC], logo [ABC]=4. Como ABC e ACD têm a mesma altura e bases 1 e 5, [ACD]=20.",s:"24"},
+{p:'Unicamp',a:2024,n:64,t:'afim',d:'f(x) = 2x+c e g(x) = 5−6x; achar c para que a origem seja o ponto médio entre os interceptos em y de f∘g e g∘f.',r:"f(g(x)) tem intercepto 10+c e g(f(x)) tem intercepto 5−6c. Origem como ponto médio exige (10+c)+(5−6c)=0.",s:"3"},
+{p:'Unicamp',a:2024,n:65,t:'gplana',d:'Medida do segmento BE num losango, a partir das medidas indicadas na figura.',r:"Usar as diagonais do losango, que se cortam ao meio em ângulo reto, e aplicar Pitágoras no triângulo retângulo que contém BE."},
+// ---- 2023 ----
+{p:'Unicamp',a:2023,n:45,t:'razao',d:'Recipiente de 30 L com 14 partes de álcool e 1 de água; quantos litros de água acrescentar para chegar a uma solução com 70% de álcool.',r:"A solução tem 28 L de álcool e 2 L de água. Queremos 28/(30+x) = 0,7, ou seja, 28 = 21 + 0,7x.",s:"10 litros"},
+{p:'Unicamp',a:2023,n:46,t:'trig',d:'Associar quatro funções trigonométricas com deslocamentos de fase aos seus respectivos esboços de gráfico.',r:"Comparar valor em x=0, sentido inicial de crescimento e defasagem de cada expressão. cos(x)+sen(x) e as versões com π/4 têm amplitude √2."},
+{p:'Unicamp',a:2023,n:47,t:'est',d:'Leitura de gráfico de radar com o número de obras vendidas por gênero literário em 2020 e 2021; avaliar afirmações comparativas.',r:"Ler o valor de cada eixo do radar nos dois anos e testar as afirmações uma a uma. Cuidado: o gráfico conta obras distintas, não exemplares vendidos."},
+{p:'Unicamp',a:2023,n:48,t:'prog',d:'Reais distintos a, b, c tais que a, b, c e ab, bc, ca formam duas PAs de mesma razão; calcular o produto abc.',r:"De bc−ab = r vem b(c−a)=r, e c−a=2r, logo b=1/2. De ca−bc=r vem c(a−b)=r, e a−b=−r, logo c=−1. Daí r=−3/2 e a=2.",s:"−1"},
+{p:'Unicamp',a:2023,n:49,t:'log',d:'Função com a propriedade f(x·y) = f(x)+f(y), com f(7)=2 e f(17)=3; calcular f(2023). Propriedade característica do logaritmo.',r:"A propriedade é a do logaritmo. Como 2023 = 7·17², f(2023) = f(7)+2f(17) = 2+3+3.",s:"8"},
+{p:'Unicamp',a:2023,n:50,t:'gesp',d:'Esfera de raio R submersa num cilindro de raio 2R; variação da altura do nível da água. Volume de esfera e de cilindro.',r:"O volume da esfera, 4πR³/3, se distribui na base do cilindro, de área π(2R)²=4πR². A subida é (4πR³/3)/(4πR²).",s:"R/3"},
+{p:'Unicamp',a:2023,n:51,t:'fgen',d:'Transformação de Möbius simplificada f(x) = (x+1)/(x−1); identificar a função inversa. Inversão de função racional.',r:"Isolar x em y=(x+1)/(x−1): y(x−1)=x+1 leva a x(y−1)=y+1. A inversa tem a mesma lei — f é involutiva.",s:"f⁻¹(x) = f(x)"},
+{p:'Unicamp',a:2023,n:52,t:'prog',d:'Sequência recursiva xₙ₊₁ = f(xₙ) gerada pela mesma transformação, com x₁ = 6; soma dos 100 primeiros termos. Explora a periodicidade.',r:"x₁=6, x₂=7/5 e x₃=f(7/5)=6: a sequência é periódica de período 2. Os 100 termos são 50 pares valendo 6+7/5 = 37/5.",s:"370"},
+{p:'Unicamp',a:2023,n:53,t:'sist',d:'Para qual valor do parâmetro a o sistema linear 2×2 admite infinitas soluções. Condição de proporcionalidade entre as equações.',r:"Infinitas soluções exigem que as duas equações sejam proporcionais, inclusive nos termos independentes. Impor a proporção entre os coeficientes e verificar qual valor de a também serve para o termo livre."},
+{p:'Unicamp',a:2023,n:54,t:'trigret',d:'Triângulo retângulo ABC com M ponto médio da hipotenusa; calcular sen α. Usa a mediana relativa à hipotenusa.',r:"A mediana relativa à hipotenusa vale metade dela, então o triângulo AMC é isósceles. Isso transporta o ângulo e permite usar a razão dos catetos."},
+{p:'Unicamp',a:2023,n:55,t:'comb',d:'Cartelas de 0001 a 2000 que exibem os algarismos 2 e 5 e nenhum outro além deles; julgar três afirmações de contagem.',r:"Contar as cartelas de 4 dígitos (0001 a 2000) formadas só com os algarismos 2 e 5, exigindo que ambos apareçam: 2⁴ combinações menos as 2 constantes, ajustando pelo limite 2000. Depois testar cada afirmação."},
+{p:'Unicamp',a:2023,n:56,t:'quad',d:'Ponto de interseção P = (a,b) entre uma reta e uma parábola dadas graficamente; valor de a+b. Leitura de gráfico e sistema.',r:"Ler no gráfico os coeficientes da reta e da parábola, igualar as duas expressões e resolver a equação do 2º grau. P é a raiz indicada na figura."},
+// ---- 2022 ----
+{p:'Unicamp',a:2022,n:13,t:'sist',d:'5 milhões de doses de três vacinas com preços diferentes, total de $40 milhões e Beta igual ao triplo de Gama; quantas doses de Alfa.',r:"Com G = g, B = 3g e A = 5.000.000 − 4g, a equação de custo 5A+10B+20G = 40.000.000 dá 30g = 15.000.000, logo g = 500.000.",s:"3.000.000 doses"},
+{p:'Unicamp',a:2022,n:14,t:'razao',d:'Carro a gasolina versus híbrido: consumo na cidade e na estrada, percurso diário fixo; em quantos anos a economia compensa o preço maior.',r:"Gasolina: 36/12 + 56/14 = 7 L/dia. Híbrido: 36/18 + 56/16 = 5,5 L/dia. Economia de 1,5 L/dia = R$ 7,50/dia. R$ 30.000 ÷ 7,50 = 4.000 dias ≈ 11 anos.",s:"Mais que 10 e menos que 12 anos"},
+{p:'Unicamp',a:2022,n:15,t:'fgen',d:'A partir dos gráficos de y = f(x) e y = g(x), calcular f(g(−1)) − g(f(1)). Leitura de gráfico e composição de funções.',r:"Ler g(−1) no segundo gráfico, aplicar em f; depois f(1) no primeiro, aplicar em g; subtrair. É leitura de gráfico, sem álgebra."},
+{p:'Unicamp',a:2022,n:16,t:'prog',d:'Média geométrica de 1, 10, 100, …, 10²². Reduz-se à soma dos expoentes, que formam uma PA.',r:"O produto é 10^(0+1+…+22) = 10^253. A raiz de índice 23 dá 10^(253/23).",s:"10¹¹"},
+{p:'Unicamp',a:2022,n:17,t:'fgen',d:'Comportamento da função I(R₀) = 100(R₀−1)/R₀, que dá a porcentagem mínima a imunizar; julgar afirmações sobre crescimento.',r:"Reescrever como I(R₀) = 100 − 100/R₀. Quanto maior R₀, menor 100/R₀ e maior I. A efetividade da vacina não entra nessa fórmula.",s:"Quanto maior R₀, maior a porcentagem mínima"},
+{p:'Unicamp',a:2022,n:18,t:'razao',d:'Com R₀ = 2 e vacina de 80% de efetividade, em que intervalo está a porcentagem mínima da população a ser vacinada.',r:"R₀=2 dá I = 50% de imunizados necessários. Como só 80% dos vacinados ficam imunes, é preciso vacinar 50/0,8 = 62,5%.",s:"Entre 56% e 65%"},
+{p:'Unicamp',a:2022,n:19,t:'gplana',d:'Círculo inscrito num quadrilátero cujos lados formam uma PA crescente de inteiros; determinar as medidas. Usa tangentes por um ponto externo.',r:"Num quadrilátero circunscritível, a soma de um par de lados opostos é igual à do outro par. Combinar isso com a PA de inteiros e o lado dado."},
+{p:'Unicamp',a:2022,n:20,t:'matr',d:'Matriz A com parâmetro k e B = A + Aᵀ; discutir para quais k o sistema BX = (2021, 2022)ᵀ tem solução única, infinitas ou nenhuma.',r:"B = A+Aᵀ tem determinante 4k²−(k+3)². Para k=0 o determinante é −9 (solução única). Para k=−1 ele zera e as linhas de B ficam iguais, mas 2021 ≠ 2022 — sistema impossível.",s:"Se k = −1, o sistema não tem solução"},
+{p:'Unicamp',a:2022,n:21,t:'prob',d:'Pedra-papel-tesoura: probabilidade de ocorrer pelo menos um empate em três partidas. Complementar de "nenhum empate".',r:"A chance de não empatar numa partida é 2/3. Em três partidas, nenhum empate tem probabilidade (2/3)³ = 8/27. O complementar é 1 − 8/27.",s:"19/27"},
+{p:'Unicamp',a:2022,n:22,t:'quad',d:'Parábola y = −x²+bx+c que intercepta o eixo x em (p,0) e (q,0) e tangencia duas retas dadas; valor de p+q.',r:"Impor discriminante zero na igualdade da parábola com cada reta, o que dá duas equações em b e c. p+q é a soma das raízes, igual a b."},
+{p:'Unicamp',a:2022,n:23,t:'poli',d:'Polinômio 2x³+ax²+bx+c divisível por 2x²−x+4; calcular c+2b−a. Divisão de polinômios com resto nulo.',r:"O quociente é x+k. Expandindo (2x²−x+4)(x+k) vem a=2k−1, b=4−k e c=4k. Substituindo, c+2b−a = 4k+8−2k−2k+1, e k desaparece.",s:"9"},
+{p:'Unicamp',a:2022,n:24,t:'trig',d:'Navio encalhado no canal de Suez com ângulo de 67,5°; largura L do canal usando as fórmulas de arco duplo fornecidas.',r:"Decompor a largura em duas parcelas: a projeção do comprimento do navio e a da largura. Usar 67,5° = 135°/2 com as fórmulas de arco duplo fornecidas para obter sen e cos de 67,5°."},
+// ---- 2021 ----
+{p:'Unicamp',a:2021,n:37,t:'comb',d:'Número de anagramas de REFLORESTAMENTO que começam com a sequência FLORES. Permutação com letras repetidas.',r:"Fixadas as 6 letras de FLORES, sobram 9 letras: R, E, E, T, T, A, M, N, O, com E e T repetidos duas vezes cada.",s:"9!/(2!·2!)"},
+{p:'Unicamp',a:2021,n:38,t:'poli',d:'Soma dos valores de x que resolvem uma equação com frações algébricas. Recai numa equação do 2º grau e nas relações de Girard.',r:"Eliminar os denominadores, reduzir a uma equação do 2º grau e usar a soma das raízes (−b/a) em vez de resolvê-la."},
+{p:'Unicamp',a:2021,n:39,t:'quad',d:'p e q de grau 2 com p(0) < q(0), p(1) = q(1) e p(−1) = q(−1); identificar o gráfico de f = p − q. Parábola com raízes ±1 e concavidade determinada.',r:"f = p−q tem grau no máximo 2, zera em x=1 e x=−1 e vale f(0)=p(0)−q(0)<0. Logo f(x)=k(x²−1) com k>0: parábola com boca para cima cortando o eixo em ±1."},
+{p:'Unicamp',a:2021,n:40,t:'razao',d:'Desmatamento da Amazônia: 2019 com acréscimos percentuais sobre 2018, 2017 e 2016 e soma de 24.600 km² em três anos; faixa da área de 2019.',r:"Chamando de X a área de 2019: 2018 = X/1,35 e 2017 = X/1,45. A soma X(1 + 1/1,35 + 1/1,45) = 24.600 dá X ≈ 10.100 km².",s:"Entre 8.801 e 10.400 km²"},
+{p:'Unicamp',a:2021,n:41,t:'razao',d:'Julgar afirmações comparativas sobre as áreas desmatadas de 2016 a 2019 a partir dos mesmos acréscimos percentuais.',r:"Reconstruir as quatro áreas a partir de X ≈ 10.100: 2016 ≈ 7.900, 2017 ≈ 7.000, 2018 ≈ 7.500. O menor ano é 2017, e 2018 ficou abaixo de 2016.",s:"A área desmatada em 2018 foi menor que a de 2016"},
+{p:'Unicamp',a:2021,n:42,t:'log',d:'Com f(x) = log₁₀(x), calcular f(1/x) + f(100x). Propriedades de logaritmo do produto e do inverso.',r:"log(1/x) = −log x e log(100x) = 2 + log x. Os logaritmos se cancelam.",s:"2"},
+{p:'Unicamp',a:2021,n:43,t:'trig',d:'Ângulos internos de um triângulo em PA (o do meio vale 60°); qual relação vale entre os lados a, b, c. Aplicação da lei dos cossenos.',r:"Ângulos em PA num triângulo forçam o do meio a valer 60°, oposto ao lado b. Lei dos cossenos: b² = a²+c²−2ac·cos60° = a²+c²−ac.",s:"b² + ac = a² + c²"},
+{p:'Unicamp',a:2021,n:44,t:'trigret',d:'Quadrado ABCD com M ponto médio de CD; calcular tg(θ) + tg(α) a partir da figura.',r:"Colocar o quadrado em coordenadas, com M no meio de um lado, e calcular cada tangente como razão entre cateto oposto e adjacente antes de somar."},
+{p:'Unicamp',a:2021,n:45,t:'matr',d:'a, b, c, d consecutivos de uma PA de razão r; valor de D/r², onde D é o determinante da matriz 2×2 formada por eles.',r:"Com b=a+r, c=a+2r e d=a+3r, o determinante ad−bc vale a(a+3r)−(a+r)(a+2r) = −2r².",s:"−2"},
+{p:'Unicamp',a:2021,n:46,t:'prog',d:'PG infinita de termos positivos com primeiros termos 1, 2x e −3x+1; soma de todos os termos. Exige achar x pela condição de PG.',r:"Condição de PG: (2x)² = 1·(−3x+1), ou 4x²+3x−1=0, com raízes 1/4 e −1. Só x=1/4 mantém tudo positivo, dando razão 1/2 e soma 1/(1−1/2).",s:"2"},
+{p:'Unicamp',a:2021,n:47,t:'ganal',d:'Reta x + 2y = 4 e seus interceptos A e B com os eixos; equação da mediatriz do segmento AB.',r:"A reta corta os eixos em A(4,0) e B(0,2); o ponto médio é (2,1). O coeficiente angular de AB é −1/2, então a mediatriz tem coeficiente 2 e passa por (2,1).",s:"2x − y = 3"},
+{p:'Unicamp',a:2021,n:48,t:'gesp',d:'Frasco cilíndrico de 500 mL com base de 6 cm de diâmetro cuja coluna baixou 5 cm num dia; em que data o frasco esvazia.',r:"Área da base = 9π ≈ 27 cm², então a altura total é 500/27 ≈ 18,5 cm. Baixando 5 cm por dia a partir de 16/3, sobram 13,5, 8,5 e 3,5 cm ao fim dos dias 16, 17 e 18.",s:"19 de março"},
+// ---- FUVEST 1ª fase 2021-2025 ----
+{p:'Fuvest',a:2025,n:16,t:'razao',d:'Rampa de acessibilidade em dois trechos: o primeiro tem projeção horizontal de 10 m e inclinação de 6%; o segundo tem projeção horizontal de 7 m e desnível de 0,5 m. A norma exige, para desnível de até 0,8 m, inclinação entre 6,25% e 8,33%. Julgar a adequação de cada trecho.',r:"Inclinação = (desnível/projeção)·100. Trecho 1: h = 6·10/100 = 0,6 m, com i = 6%, abaixo do mínimo de 6,25% exigido para h ≤ 0,8 m. Trecho 2: i = 0,5/7·100 ≈ 7,14%, dentro da faixa.",s:"A rampa não está adequada porque o primeiro trecho descumpre a norma"},
+{p:'Fuvest',a:2025,n:17,t:'ganal',d:'Travessia de pedestres com O(0,0), B(13,−15) e C(29,−8): quanto se deixaria de caminhar indo direto de O a C em vez de passar por B. Distância entre pontos no plano.',r:"OB = √394 ≈ 19,8; BC = √305 ≈ 17,5; OC = √905 ≈ 30,1. A economia é 19,8 + 17,5 − 30,1 ≈ 7,2 m.",s:"5 ≤ d ≤ 8"},
+{p:'Fuvest',a:2025,n:45,t:'est',d:'Expectativa de vida aos 19 anos no Brasil (58) tomada como média simples entre homens (54,7) e mulheres; a diferença entre os sexos se mantém aos 20 anos, quando a dos homens é 53,8. Calcular a expectativa das mulheres aos 19 e a do Brasil aos 20.',r:"De (54,7 + M)/2 = 58 vem M = 61,3, e a diferença entre os sexos é 6,6. Aos 20 anos, mulheres = 53,8 + 6,6 = 60,4, e a média do país é (53,8 + 60,4)/2.",s:"61,3 e 57,1"},
+{p:'Fuvest',a:2025,n:48,t:'est',d:'Dois gráficos do IBGE sobre abate de bovinos por trimestre (2019–2024): total abatido e participação percentual de machos e fêmeas. Julgar afirmações sobre as quantidades de fêmeas abatidas.',r:"Para cada trimestre, multiplicar o total abatido lido no primeiro gráfico pela porcentagem de fêmeas lida no segundo, e comparar os resultados exigidos em cada alternativa."},
+{p:'Fuvest',a:2025,n:52,t:'trig',d:'Onda AM modelada por s(t) = A[1 + k·m(t)]·cos(2πft); qual transformação sofre o gráfico do cosseno quando a frequência f é multiplicada por 3.',r:"O período de cos(2πft) é 1/f. Triplicar f divide o período por 3, comprimindo o gráfico no eixo do tempo sem alterar a amplitude.",s:"Contração horizontal"},
+{p:'Fuvest',a:2025,n:69,t:'mod',d:'Identificar o gráfico de f(x) = |x² + 5x − 6| − 5x + 6. Exige abrir o módulo por intervalos.',r:"As raízes de x²+5x−6 são −6 e 1. Fora desse intervalo o módulo não muda o sinal e f(x) = x². Dentro dele f(x) = −x²−10x+12, parábola com concavidade para baixo e vértice em x = −5."},
+{p:'Fuvest',a:2025,n:70,t:'prog',d:'PA (aₙ) e sequência (bₙ) com bₙ₊₁ = bₙ + aₙ; determinar a razão r′ de (bₙ) supondo que ela também seja uma PA.',r:"Da lei de formação, bₙ₊₁ − bₙ = aₙ. Se (bₙ) é PA, essa diferença é constante, logo (aₙ) é constante e vale a₁.",s:"r′ = a₁"},
+{p:'Fuvest',a:2025,n:75,t:'gesp',d:'Vaso cujo perfil tem base e topo circulares de raio 10 cm, cintura de raio 5 cm e a medida h indicada valendo 12 cm; calcular a capacidade em cm³.',r:"O vaso é a união de dois troncos de cone iguais, unidos pela cintura. Aplicar V = (πH/3)(R² + Rr + r²) com R = 10 e r = 5 em cada tronco e somar. A altura H de cada tronco vem da leitura de h na figura."},
+{p:'Fuvest',a:2025,n:76,t:'gesp',d:'Cilindro C de raio r e altura h; C₁ tem o mesmo raio e altura h/2; C₂ tem altura h e raio r/2. Relacionar volumes e áreas laterais dos três.',r:"V = πr²h, V₁ = πr²h/2 e V₂ = πr²h/4, logo V = V₁ + 2V₂. Já A = 2πrh e A₁ = A₂ = πrh, logo A = A₁ + A₂.",s:"V = V₁ + 2V₂ e A = A₁ + A₂"},
+{p:'Fuvest',a:2025,n:77,t:'ganal',d:'Classificar a posição relativa das curvas x² + y² − 4x = −3 e x² + y² − 4y = −3 no plano cartesiano.',r:"Completando quadrados: (x−2)² + y² = 1 e x² + (y−2)² = 1. Raios iguais a 1 e centros (2,0) e (0,2), distantes 2√2 ≈ 2,83 — mais que a soma dos raios.",s:"Duas circunferências de centros distintos que não se interceptam"},
+{p:'Fuvest',a:2024,n:13,t:'matr',d:'Rede social de 4 pessoas representada por matriz 4×4 de zeros e uns (aᵢⱼ = 1 se Pᵢ segue Pⱼ); julgar afirmações sobre as conexões de grau 2 dadas por M².',r:"Calcular M² pela regra do produto fornecida e ler cada entrada bₘₙ como o número de caminhos de Pₘ a Pₙ passando por exatamente um intermediário. Depois testar cada alternativa contando pares."},
+{p:'Fuvest',a:2024,n:31,t:'gesp',d:'Caminhão-pipa com tanque cilíndrico deitado, 6 m de comprimento e 2 m de diâmetro, que estava cheio e ficou com água até 3/4 da altura; quanto foi descarregado, em m³.',r:"Volume total = π·1²·6 = 6π. O que resta é o comprimento vezes a área do círculo abaixo da altura 1,5 m, ou seja 6·(2π/3 + √3/4) = 4π + 3√3/2. A diferença é o que saiu.",s:"(2π − 3√3/2) m³"},
+{p:'Fuvest',a:2024,n:33,t:'razao',d:'Medicamento com quatro componentes (200 mg a R$700/g, 70 mg a R$500/g, 130 mg a R$300/g e 100 mg a R$120/g) cujos custos variam +7%, −5%, 0 e +10%; calcular o aumento em reais.',r:"Custo de cada componente: 140, 35, 39 e 12 reais. Aplicando as variações: +9,80, −1,75, 0 e +1,20.",s:"R$ 9,25"},
+{p:'Fuvest',a:2024,n:34,t:'est',d:'Quantas listas de 5 inteiros positivos têm moda, mediana, média e amplitude todas iguais a 23. Combina medidas de posição com contagem.',r:"Com a₃ = 23, soma 115 e a₅ = a₁ + 23, sobra 2a₁ + a₂ + a₄ = 69, com 8 ≤ a₁ ≤ 15. Para a moda ser 23 é preciso que 23 apareça duas vezes, o que só ocorre com a₂ = 23 (a₁ de 8 a 11) ou a₄ = 23 (a₁ de 12 a 15).",s:"8"},
+{p:'Fuvest',a:2024,n:35,t:'comb',d:'Relógio digital sobre mesa de vidro que reflete o horário: quantos dos horários de 00:00 a 23:59 produzem, na reflexão, um horário válido.',r:"A reflexão inverte cada algarismo de cima para baixo: 0, 1, 3 e 8 se mantêm, 2↔5 e 6↔9; 4 e 7 não geram algarismo. Para o reflexo ser hora válida, o primeiro dígito deve ser 0 ou 1 (2 opções), o segundo qualquer dos 8 refletíveis, o dos minutos 0,1,2,3 ou 5 (5 opções) e o último qualquer dos 8.",s:"640"},
+{p:'Fuvest',a:2024,n:48,t:'gesp',d:'Número máximo de embalagens de 2 cm × 3 cm × 11 cm que cabem, sem danificar, numa caixa de 12 cm × 13 cm × 26 cm.',r:"O volume só permitiria 61 embalagens, mas a aresta de 11 cm impede o aproveitamento total. Dividindo os 13 cm em 11 + 2: na fatia de 11 cm cabem 12·26/6 = 52 peças; na fatia de 2 cm, com o 11 ao longo dos 26 cm, cabem mais 8.",s:"60"},
+{p:'Fuvest',a:2024,n:49,t:'trigret',d:'Garagem com vagas para automóveis e uma vaga de moto em forma de paralelogramo com ângulo de 60°; medir o segmento tracejado que sobra depois da vaga da moto.',r:"Usar as dimensões regulamentares da tabela e decompor o paralelogramo em retângulo e triângulos retângulos, aplicando cos60° = 0,5 e sen60° = √3/2 para achar a projeção que falta."},
+{p:'Fuvest',a:2024,n:59,t:'expo',d:'Função f(x) = bˣ (b > 0, b ≠ 1) e sua inversa, com um ponto marcado no gráfico de cada uma; calcular b + k.',r:"Se (p,q) pertence ao gráfico de f, então (q,p) pertence ao da inversa. Ler os dois pontos, montar as duas igualdades exponenciais e resolver para b e para k."},
+{p:'Fuvest',a:2024,n:60,t:'sist',d:'Escolher a representação gráfica do sistema x + 2y = 4 e 3x − y = 5.',r:"Somando o dobro da segunda equação à primeira, 7x = 14, logo x = 2 e y = 1. As retas têm coeficientes angulares −1/2 e 3 e interceptos em y iguais a 2 e −5.",s:"As duas retas que se cruzam no ponto (2, 1)"},
+{p:'Fuvest',a:2024,n:63,t:'prog',d:'Árvore Pitagórica: a cada etapa os novos quadrados têm lado igual ao cateto do triângulo retângulo isósceles de hipotenusa igual ao lado anterior. A partir de que etapa o lado fica menor que 10⁻⁴ do lado inicial.',r:"O lado é dividido por √2 a cada etapa, logo na etapa n vale (1/√2)^(n−1). Impondo (n−1)·(log₁₀2)/2 > 4 com log₁₀2 = 0,3, vem n − 1 > 26,7.",s:"Etapa 28"},
+{p:'Fuvest',a:2024,n:84,t:'est',d:'Gráfico da taxa de homicídios de mulheres por 100 mil habitantes de 2007 a 2017, no Brasil e em três unidades federativas; julgar afirmações comparativas.',r:"Ler as quatro curvas nos anos citados em cada alternativa e comparar variações e somas. Cuidado: as taxas são por 100 mil mulheres, então não se somam entre unidades federativas."},
+{p:'Fuvest',a:2024,n:85,t:'prog',d:'Números triangulares (1, 3, 6, 10, …) e números oblongos (2, 6, 12, 20, …): julgar afirmações sobre 162, 156, 210 e sobre os termos dessas sequências.',r:"O n-ésimo triangular é n(n+1)/2 e o n-ésimo oblongo é n(n+1). Como 210 = 20·21/2 e 210 = 14·15, ele pertence às duas sequências. As diferenças entre triangulares consecutivos formam PA, não PG.",s:"210 é triangular e oblongo"},
+{p:'Fuvest',a:2023,n:21,t:'fgen',d:'Escolher a fórmula do total pago por x quilos de arroz sabendo que 1 kg custa R$5,00, que o total cresce com a quantidade e que o preço por quilo diminui com ela.',r:"Testar cada expressão: precisa valer 5 em x = 1, ser crescente e ter f(x)/x decrescente. Com 5√x, o preço por quilo é 5/√x, que cai conforme x cresce.",s:"5√x"},
+{p:'Fuvest',a:2023,n:22,t:'prog',d:'Celular pago em 24 parcelas em PA crescente começando por R$120,00, R$126,00 e R$132,00; quanto foi pago sabendo que a 19ª parcela não foi quitada.',r:"Razão 6. Soma das 24 parcelas = 12·(240 + 23·6) = 4.536. A 19ª vale 120 + 18·6 = 228, que deve ser subtraída.",s:"R$ 4.308,00"},
+{p:'Fuvest',a:2023,n:24,t:'sist',d:'André abasteceu 18 L de etanol e 32 L de gasolina; Bianca, 30 L de etanol e 20 L de gasolina. O total de André foi 10% maior. Razão entre os preços por litro de etanol e gasolina.',r:"18e + 32g = 1,1(30e + 20g) leva a 10g = 15e, ou seja e/g = 2/3.",s:"2/3"},
+{p:'Fuvest',a:2023,n:36,t:'sist',d:'Escala pitagórica: o tom corresponde à razão 9/8 e o semitom a 256/243, e somar intervalos é multiplicar razões. Achar n + m sabendo que o intervalo de 220 Hz a 990 Hz tem n tons e m semitons.',r:"A razão pedida é 990/220 = 9/2. Em fatores primos, (3²/2³)ⁿ·(2⁸/3⁵)^m = 2^(8m−3n)·3^(2n−5m) = 2⁻¹·3². O sistema 8m − 3n = −1 e 2n − 5m = 2 dá m = 4 e n = 11.",s:"15"},
+{p:'Fuvest',a:2023,n:58,t:'est',d:'Gráfico da emissão anual de CO₂, em bilhões de toneladas, ao longo dos anos; estimar o total emitido entre 1950 e 1990.',r:"Somar as emissões ano a ano equivale a estimar a área sob a curva no intervalo. Aproximar por retângulos ou trapézios e comparar com as faixas oferecidas."},
+{p:'Fuvest',a:2023,n:84,t:'comb',d:'Prova com 2 questões de matemática e 6 de física, escolhidas de um banco com 3 de matemática e 8 de física; quantas provas distintas são possíveis, sem contar a ordem.',r:"Combinações independentes: C(3,2)·C(8,6) = 3·28.",s:"84"},
+{p:'Fuvest',a:2023,n:85,t:'expo',d:'Ranking da FIFA: P′ = P + 60(V − E), com E = 10^((Pₐ−P_b)/600)/(1 + 10^((Pₐ−P_b)/600)). Quanto a seleção A ganha vencendo, sabendo que Pₐ − P_b = 360 e log₁₀2 = 0,3.',r:"O expoente vale 0,6 e, como log₁₀2 = 0,3, tem-se 10^0,6 = 2² = 4. Então E = 4/5 = 0,8 e o ganho é 60·(1 − 0,8).",s:"12 pontos"},
+{p:'Fuvest',a:2023,n:86,t:'gesp',d:'Pedra irregular imersa em recipiente cilíndrico de raio 8 cm cujo nível da água sobe de 20 cm para 23,5 cm; volume da pedra.',r:"O volume deslocado é o do cilindro de raio 8 e altura 3,5: π·64·3,5.",s:"224π cm³"},
+{p:'Fuvest',a:2023,n:87,t:'conj',d:'Primorial n# é o produto dos primos menores ou iguais a n (por exemplo 6# = 2·3·5 = 30); achar o menor primorial maior que 2000.',r:"Os primoriais são 2, 6, 30, 210 e 2310. O primeiro a ultrapassar 2000 é 2·3·5·7·11.",s:"2310"},
+{p:'Fuvest',a:2023,n:88,t:'gplana',d:'Identificar a notação do ladrilhamento uniforme mostrado na foto do piso de um museu, listando os polígonos que cercam um vértice no sentido anti-horário.',r:"Escolher um vértice do padrão, contar quantos lados tem cada polígono que o contém e listá-los em ordem, começando pelo de menos lados. A soma dos ângulos internos no vértice tem de dar 360°."},
+{p:'Fuvest',a:2023,n:89,t:'ganal',d:'Área da interseção entre A = {|x| + |y| ≤ 1} e B = {(x+1)² + y² ≥ 1}, isto é, o quadrado losangular menos a parte interna de um círculo.',r:"A é um quadrado de diagonais 2, com área 2. O círculo tem centro (−1,0), que é justamente um vértice de A, e raio 1; os lados de A formam ali um ângulo reto, e o arco tangencia esses lados. A parte retirada é um quarto de círculo, de área π/4.",s:"2 − π/4"},
+{p:'Fuvest',a:2023,n:90,t:'log',d:'Os pontos (3,2) e (5,4) pertencem ao gráfico de y = log₂(ax + b); calcular a + b.',r:"As condições dão 3a + b = 2² = 4 e 5a + b = 2⁴ = 16. Subtraindo, 2a = 12, logo a = 6 e b = −14.",s:"−8"},
+{p:'Fuvest',a:2022,n:30,t:'comb',d:'Placas de automóvel: o padrão antigo usa 3 letras (26 possíveis) e 4 algarismos; o padrão Mercosul usa 4 letras e 3 algarismos, com repetições permitidas. Quantas vezes o novo padrão tem mais placas.',r:"São 26⁴·10³ contra 26³·10⁴. A razão se reduz a 26/10.",s:"2,6 vezes"},
+{p:'Fuvest',a:2022,n:31,t:'conj',d:'Sistema de numeração chinês em barras, posicional de base 10, com símbolos diferentes para posições ímpares e pares; representar o número 91625.',r:"Decompor 91625 em 9 dezenas de milhar, 1 unidade de milhar, 6 centenas, 2 dezenas e 5 unidades, e escolher para cada algarismo o traçado da linha correta conforme a posição seja par ou ímpar."},
+{p:'Fuvest',a:2022,n:32,t:'razao',d:'Vídeo de três minutos reproduzido a 1,5 vez a velocidade original; tempo total de reprodução.',r:"Tempo e velocidade são inversamente proporcionais: 3 min ÷ 1,5.",s:"2 min 00 s"},
+{p:'Fuvest',a:2022,n:33,t:'razao',d:'Produção semanal de cadeiras em três modelos e duas cores, com 2%, 5% e 8% de defeituosas conforme o modelo; montar a tabela de cadeiras boas e defeituosas por cor.',r:"Para cada cor, aplicar a porcentagem de defeito do respectivo modelo à quantidade produzida, somar os defeitos dos três modelos e subtrair do total daquela cor."},
+{p:'Fuvest',a:2022,n:34,t:'quad',d:'Presente de R$200,00 dividido igualmente; com a desistência de duas pessoas, cada uma das restantes pagou R$5,00 a mais. Quanto pagou cada uma que ficou.',r:"Com n pessoas iniciais: 200/(n−2) − 200/n = 5, que vira n² − 2n − 80 = 0 e dá n = 10. Restaram 8 pessoas, e 200/8 é o valor pago.",s:"R$ 25,00"},
+{p:'Fuvest',a:2022,n:35,t:'prog',d:'Poço cujo primeiro metro custou R$1.000,00 e cada metro seguinte R$200,00 a mais que o anterior, com custo total de R$48.600,00; qual a profundidade.',r:"PA de primeiro termo 1000 e razão 200. A soma vale 100n² + 900n = 48.600, ou n² + 9n − 486 = 0, cuja raiz positiva é 18.",s:"18 m"},
+{p:'Fuvest',a:2022,n:36,t:'gesp',d:'Deltaedro convexo (todas as faces triângulos equiláteros) com 8 vértices; quantas faces tem.',r:"Cada aresta pertence a duas faces triangulares, logo 3F = 2A. Substituindo A = 3F/2 na relação de Euler F − A + V = 2 com V = 8, vem F/2 = 6.",s:"12"},
+{p:'Fuvest',a:2022,n:37,t:'trig',d:'Quadrado de lado 1 e círculo de raio 2, ambos centrados em O; A no contorno do quadrado, B no círculo e AB = 2. Cosseno do ângulo AÔB quando ele é máximo.',r:"Pela lei dos cossenos em OAB, com OB = AB = 2: 4 = OA² + 4 − 4·OA·cosθ, logo cosθ = OA/4. O ângulo é máximo quando OA é mínimo, isto é, no apótema do quadrado, OA = 1/2.",s:"1/8"},
+{p:'Fuvest',a:2022,n:38,t:'poli',d:'p(x) = x³ + mx − 2 tem raiz real dupla a e raiz simples b; calcular m + a.',r:"Sem termo em x², a soma das raízes é zero: 2a + b = 0. O produto vale 2, então a²(−2a) = 2 e a = −1, b = 2. De m = a² + 2ab vem m = −3.",s:"−4"},
+{p:'Fuvest',a:2022,n:39,t:'gplana',d:'Quatro tanques cilíndricos de raio 10 m, com centros em vértices de dois quadrados adjacentes de 30 m de lado, cercados por uma fita esticada que dá uma volta completa; comprimento da fita.',r:"A fita é formada por trechos retos, paralelos aos lados do polígono convexo dos centros, mais arcos que juntos completam uma circunferência de raio 10, ou seja 20π. Os trechos retos somam o perímetro desse polígono, lido na figura."},
+{p:'Fuvest',a:2022,n:40,t:'razao',d:'Razão entre o diâmetro do foco de um microscópio óptico (1 micrômetro) e o diâmetro da ponta da nanoantena (10 nanômetros); ordem de grandeza.',r:"1 μm = 10⁻⁶ m e 10 nm = 10⁻⁸ m. A razão é 10⁻⁶/10⁻⁸.",s:"100"},
+{p:'Fuvest',a:2022,n:41,t:'log',d:'Gráfico de log₁₀x em função do tempo, onde x é a turbidez (proporcional à população de bactérias); em quantas vezes a população cresceu entre dois instantes marcados.',r:"Ler log₁₀x nos dois instantes; a razão entre as populações é 10 elevado à diferença desses valores, já que a turbidez é proporcional à quantidade de bactérias."},
+{p:'Fuvest',a:2021,n:1,t:'gplana',d:'Malha de ruas ortogonais com três caminhos distintos de X até Y, de comprimentos a, b e c; comparar as três distâncias.',r:"Em malha ortogonal, todo caminho que só avança nas duas direções úteis tem o mesmo comprimento (a soma dos deslocamentos horizontal e vertical). Caminhos que recuam em alguma direção ficam mais longos; basta identificar na figura quais recuam."},
+{p:'Fuvest',a:2021,n:2,t:'fgen',d:'Escolher, entre cinco gráficos, aquele em que y sempre diminui à medida que x aumenta.',r:"Procurar a curva estritamente decrescente em todo o domínio, descartando as que têm trechos horizontais, trechos crescentes ou pontos de retorno."},
+{p:'Fuvest',a:2021,n:3,t:'conj',d:'Julgar afirmações sobre números primos, entre elas quantos primos existem entre 24 e 36 e se 143 é primo.',r:"Entre 24 e 36 os primos são 29 e 31. Além disso 2 é primo e par, os primos são infinitos, 2ⁿ+1 nem sempre é primo e 143 = 11·13.",s:"Entre 24 e 36 existem somente dois números primos"},
+{p:'Fuvest',a:2021,n:4,t:'gplana',d:'Três triângulos equiláteros de área T e dois quadrados de área Q formam uma figura plana; os centros das cinco peças são vértices de um pentágono irregular cuja área deve ser expressa em função de T e Q.',r:"Decompor o pentágono em triângulos apoiados nos centros das peças e comparar cada pedaço com a peça que o contém, escrevendo as frações de T e de Q que cabem dentro do pentágono."},
+{p:'Fuvest',a:2021,n:5,t:'razao',d:'Comerciante que passa a pagar 6% de taxa por venda e quer continuar recebendo o mesmo valor líquido P; qual deve ser o novo preço V.',r:"Ele recebe 94% do preço cobrado, então 0,94·V = P.",s:"V = P/0,94"},
+{p:'Fuvest',a:2021,n:6,t:'sist',d:'Treino de basquete que dá 5 pontos por acerto e tira 2 por erro; em 50 arremessos a jogadora fez 124 pontos. Diferença entre acertos e erros.',r:"Com x acertos, 5x − 2(50 − x) = 124 leva a 7x = 224 e x = 32. Os erros são 18.",s:"14"},
+{p:'Fuvest',a:2021,n:7,t:'conj',d:'Montar um paralelepípedo de 60 cm × 24 cm × 18 cm com a menor quantidade possível de cubos idênticos de aresta inteira; quantos cubos são necessários.',r:"Menos cubos significa cubos maiores, então a aresta é o MDC de 60, 24 e 18, que é 6. O número de cubos é (60/6)·(24/6)·(18/6).",s:"120"},
+{p:'Fuvest',a:2021,n:8,t:'comb',d:'Códigos de reunião com 10 letras de um alfabeto de 26; em que faixa está a quantidade de códigos distintos, sabendo que log₁₀13 ≈ 1,114.',r:"São 26¹⁰ códigos. Como log₁₀26 = log₁₀13 + log₁₀2 ≈ 1,415, tem-se log₁₀(26¹⁰) ≈ 14,15, ou seja algo em torno de 1,4·10¹⁴.",s:"Entre 100 trilhões e 1 quatrilhão"},
+{p:'Fuvest',a:2021,n:9,t:'gplana',d:'AC e DE paralelos e perpendiculares a CD, B sobre AC, F ponto médio de AB e ABE equilátero; com BC = 10 e AE = 6, calcular DF.',r:"Colocando C na origem com CD horizontal: B = (0,10), A = (0,16) e, pelo triângulo equilátero de lado 6, E = (3√3, 13). Então D = (3√3, 0) e F = (0,13), e DF = √(27 + 169).",s:"14 unidades de comprimento"},
+{p:'Fuvest',a:2021,n:10,t:'ganal',d:'Descrever por inequações a região hachurada contida no círculo de centro na origem e raio 1, delimitada também por uma reta.',r:"A condição do disco é x² + y² ≤ 1. Falta identificar na figura de que lado da reta está a região e escrever a desigualdade correspondente, testando um ponto interior."},
+{p:'Fuvest',a:2021,n:11,t:'quad',d:'Para quais valores de c os gráficos de f(x) = c + x² e g(x) = x se intersectam.',r:"Igualando, x² − x + c = 0. Há solução real exatamente quando o discriminante 1 − 4c é maior ou igual a zero.",s:"c ≤ 1/4"},
+{p:'Fuvest',a:2021,n:12,t:'gplana',d:'Maior quadrado que se pode recortar de um triângulo retângulo de catetos 12 cm e 35 cm, com um vértice do quadrado coincidindo com o ângulo reto; medida aproximada do lado.',r:"Por semelhança, o lado vale ab/(a+b) = 12·35/47 = 420/47 ≈ 8,94.",s:"Aproximadamente 9,0 cm"},
+{p:'Fuvest',a:2021,n:13,t:'gesp',d:'Terra suposta esférica com Equador de 40.000 km: comprimento do trajeto que vai do Polo Norte ao Equador por Greenwich, segue pelo Equador até o meridiano 45°L e volta ao Polo Norte.',r:"Cada trecho de polo a Equador é um quarto de meridiano, 10.000 km. O trecho equatorial cobre 45° de 360°, ou seja 40.000/8 = 5.000 km.",s:"25.000 km"},
+// ---- UNESP 1ª fase 2021-2024 ----
+{p:'Unesp',a:2024,n:83,t:'razao',d:'Gráfico com a razão entre matrículas no ensino superior privado e público em cada uma das 27 unidades da Federação (2021). Pede-se quantas unidades têm 60% ou mais das matrículas na rede privada.',r:"Traduzir o percentual em razão: privado ≥ 60% do total equivale a privado/público ≥ 60/40 = 1,5. Depois contar quantas barras do gráfico atingem 1,5.",s:"12 unidades da Federação"},
+{p:'Unesp',a:2024,n:84,t:'gplana',d:'Trapézio retângulo ABCD desenhado em malha quadriculada, dividido em um paralelogramo EBCF (área S₁), um triângulo retângulo EFG (área S₂) e um retângulo AEGD (área S₃). Pede-se a relação entre S₁, S₂ e S₃.',r:"Cada intervalo unitário da malha está dividido em 5 partes, então cada quadradinho mede 0,2. Com AD = 4,4, CF = 0,4, FG = 2,0 e GD = 1,0, sai S₁ = 1,76 e S₂ = S₃ = 4,4.",s:"5·S₁ = 2·S₂ = 2·S₃"},
+{p:'Unesp',a:2024,n:85,t:'quad',d:'Equação nx² − x + 1 = 0, com n real, tendo duas raízes reais positivas e distintas. Pede-se o conjunto dos valores de n.',r:"Produto das raízes 1/n > 0 dá n > 0. Discriminante 1 − 4n > 0 dá n < 1/4. A interseção das duas condições fecha o intervalo.",s:"0 < n < 1/4"},
+{p:'Unesp',a:2024,n:86,t:'est',d:'Placa quadrada de 2 kg (lado 2) e placa retangular de 3 kg (2 por 4) num plano cartesiano, com centro de massa em (6,8; 4,2). Acrescenta-se uma placa circular de 3 kg, centro (2, 1) e raio 1; pede-se o novo centro de massa.',r:"Média ponderada das coordenadas dos centros pelas massas: x = (2·2 + 3·10 + 3·2)/8 = 40/8 e y = (2·3 + 3·5 + 3·1)/8 = 24/8.",s:"(5; 3)"},
+{p:'Unesp',a:2024,n:87,t:'prob',d:'Ana soma dois números distintos sorteados de {8, 9, 10}; Beto multiplica dois números distintos sorteados de {3, 5, 6}. Probabilidade de a soma de Ana ser maior ou igual ao produto de Beto.',r:"Somas possíveis de Ana: 17, 18, 19. Produtos de Beto: 15, 18, 30. Dos 9 pares ordenados equiprováveis, 5 satisfazem soma ≥ produto.",s:"5/9"},
+{p:'Unesp',a:2024,n:88,t:'expo',d:'Três insetos introduzidos no instante zero viram 18.000 após sete meses, com crescimento modelado por f(x) = t·uˣ. Um gráfico auxiliar de g(x) = 6000^(1/x) fornece valores aproximados. Pede-se t + u.',r:"De f(0) = 3 vem t = 3. De f(7) = 18000 vem u⁷ = 6000, ou seja, u = 6000^(1/7), lido no gráfico como ≈ 3,47.",s:"≈ 6,47"},
+{p:'Unesp',a:2024,n:89,t:'trigret',d:'Projeto de casa sustentada por dois pilares perpendiculares ao eixo x, com rampa retilínea de inclinação α. Medidas na figura: AB = 22, AD = 30, pilar maior (DE) = 17,5. Pede-se o pilar menor e o intervalo angular de α.',r:"Os pilares são paralelos, então os triângulos ABC e ADE são semelhantes: h/17,5 = 22/30, dando h = 77/6 m. Depois tg α = 17,5/30 ≈ 0,583, valor entre tg 30° e tg 31°.",s:"77/6 m e 30° < α < 31°"},
+{p:'Unesp',a:2024,n:90,t:'logica',d:'Pede-se o menor número com algarismos distintos, sem zero, em que dois algarismos vizinhos nunca sejam consecutivos em nenhum dos dois sentidos de leitura. O ChatGPT respondeu 13246 e errou; a questão pede qual trecho do enunciado a ferramenta ignorou.',r:"Em 13246 aparece o par 32, consecutivo lido da direita para a esquerda — logo o trecho ignorado é o que trata desse sentido. Construindo pelo menor algarismo disponível a cada passo chega-se ao número correto.",s:"Ignorou “da direita para a esquerda” (o número correto é 13524)"},
+{p:'Unesp',a:2023,n:83,t:'afim',d:'Conta de água com parcela fixa de R$ 4,00 mais M reais por m³ até 12 m³ e N reais por m³ no que exceder 12 m³. Um gráfico descreve o valor total em função do consumo; pede-se M e N.',r:"A função é afim por partes: o coeficiente angular do primeiro trecho é M e o do segundo é N. Basta ler dois pontos de cada trecho no gráfico e calcular as inclinações."},
+{p:'Unesp',a:2023,n:84,t:'razao',d:'Quadro comparativo simplificado entre Júpiter, Terra e Sol, com modelos esféricos e órbitas circulares. Sendo x o raio da Terra e y outra medida indicada na figura, pede-se a menor distância entre os centros de Júpiter e da Terra.',r:"Escrever raio de Júpiter e raios orbitais como múltiplos de x e y conforme o quadro, e montar a menor distância como diferença entre os raios orbitais. As constantes dependem dos fatores impressos na figura."},
+{p:'Unesp',a:2023,n:85,t:'razao',d:'Pesquisa com mais de 16.000 adultos: 40% pediram aumento salarial e pouco mais de um quarto desses conseguiram. Pede-se o percentual do total de entrevistados que obteve aumento.',r:"Porcentagem de porcentagem: um quarto de 40% é 25% · 40% = 10% do total de entrevistados.",s:"10%"},
+{p:'Unesp',a:2023,n:86,t:'gplana',d:'Losango BELO de lado 2 cm inscrito no retângulo BALU, com os vértices E e O sobre lados do retângulo. A diagonal do retângulo forma 30° com um dos lados. Pede-se a área do retângulo.',r:"O triângulo formado por dois lados do losango e a diagonal do retângulo é isósceles, o que fixa seus ângulos a partir dos 30° dados e permite calcular a diagonal. Com a diagonal e o ângulo de 30°, os lados do retângulo saem por seno e cosseno."},
+{p:'Unesp',a:2023,n:87,t:'gplana',d:'Triângulo PQR inscrito numa circunferência de diâmetro PR = 10 m, com PQ = 6 m. Uma partícula percorre P → Q → R e volta a P pelo arco, saindo a 8 m/s e chegando a 10 m/s com aceleração escalar constante. Adota-se π = 3.',r:"O ângulo em Q é reto (PR é diâmetro), então QR = 8 pelo teorema de Pitágoras. O arco de volta é meia circunferência: 3·10/2 = 15. Percurso total 6 + 8 + 15 = 29 m, e a = (10² − 8²)/(2·29).",s:"18/29 m/s² ≈ 0,62 m/s²"},
+{p:'Unesp',a:2023,n:88,t:'est',d:'Gráfico comparativo de cinco metais, incluindo o alumínio, em cinco propriedades. Deseja-se o menor valor possível nas propriedades 1 e 4 e o maior nas propriedades 2, 3 e 5; pede-se em quais o alumínio é o mais vantajoso.',r:"Para cada propriedade, comparar a posição do alumínio com a dos outros quatro metais no gráfico e verificar em quais delas ele é o extremo desejado. Não há conta: é leitura comparativa."},
+{p:'Unesp',a:2023,n:89,t:'gesp',d:'De um paralelepípedo reto-retângulo com uma das dimensões igual a 20 cm retiram-se dois cubos de aresta x, cada um com três arestas contidas em arestas do sólido e uma face contida na mesma face quadrada do paralelepípedo. Pede-se o volume restante para o maior x possível.',r:"O maior x é limitado pelo lado da face quadrada, já que os dois cubos compartilham essa face: x vale metade desse lado. O volume pedido é o do paralelepípedo menos 2x³."},
+{p:'Unesp',a:2023,n:90,t:'prob',d:'Chaveamento de 8 times nas quartas de final, com a probabilidade de avanço indicada ao lado de cada time; na semifinal os times dos grupos E e F têm 50% cada. Pede-se a probabilidade de o time 1 disputar a final contra o time 5 ou o time 7.',r:"Multiplicar a probabilidade de o time 1 vencer as quartas pela de ele vencer a semifinal (50%), e somar os caminhos em que 5 ou 7 chegam à final pelo outro lado da chave. Os fatores dependem dos percentuais impressos na tabela."},
+{p:'Unesp',a:2022,n:83,t:'razao',d:'Passagem de ônibus a R$ 108,00 contra viagem de carro que faz 14 km por litro, com gasolina a R$ 5,60 o litro e R$ 0,20 por quilômetro de manutenção. Os custos são iguais; pede-se a distância.',r:"Custo por quilômetro do carro: 5,60/14 = 0,40 de combustível mais 0,20 de manutenção, total 0,60. Igualando 0,60·d = 108.",s:"180 km"},
+{p:'Unesp',a:2022,n:84,t:'gplana',d:'Curva em vermelho ligando os pontos U e P e passando por N, E e S, desenhada sobre uma malha com medidas indicadas. Pede-se uma boa aproximação para a área da região sob a curva.',r:"Decompor a região em figuras elementares da malha (retângulos, triângulos e trapézios) e somar as áreas, aproximando os trechos curvos por segmentos."},
+{p:'Unesp',a:2022,n:85,t:'est',d:'Aplicativo registra tempo acumulado t e distância acumulada d a cada 10 minutos de um passeio de 50 minutos, e ajusta a reta d = 0,311t + 0,53. Pede-se o menor erro percentual por superestimativa cometido pela reta.',r:"Para cada um dos cinco pares (t, d) da tabela, calcular d previsto pela reta, ver em quais ele supera o valor observado e tomar o menor erro relativo entre esses casos."},
+{p:'Unesp',a:2022,n:86,t:'trig',d:'A altura ao chão de um ponto Q do eixo dos pedais de uma bicicleta é h = 20 + 10·cos(πt), com t em segundos contado a partir do instante em que Q está no ponto mais alto. Pede-se o comprimento do eixo.',r:"Como o cosseno varia entre −1 e 1, a altura oscila entre 10 cm e 30 cm. Os pontos das duas extremidades do eixo são diametralmente opostos, então o comprimento é a diferença entre altura máxima e mínima.",s:"20 cm"},
+{p:'Unesp',a:2022,n:87,t:'gplana',d:'Quadrado PADU de lado 2 cm; a partir de M, ponto médio de um de seus lados, constrói-se um segundo quadrado MENU. Pede-se a área do pentágono não convexo UNESP.',r:"Determinar o lado do segundo quadrado pela posição do ponto médio e decompor o pentágono em triângulos e quadriláteros cujas áreas saem das medidas dos dois quadrados, subtraindo a reentrância."},
+{p:'Unesp',a:2022,n:88,t:'prob',d:'Roda sorteia com igual probabilidade um dos 100 primeiros naturais positivos. O jogador A ganha com múltiplos de 3, o B com múltiplos de 4 ou 6, ambos repartem quando as duas condições valem, e a banca ganha quando nenhuma vale. Pede-se a probabilidade de a banca ganhar.',r:"Múltiplos de 6 já são múltiplos de 3, então o conjunto vencedor é o dos múltiplos de 3 ou 4: 33 + 25 − 8 (múltiplos de 12) = 50. Sobram 50 dos 100 números para a banca.",s:"50%"},
+{p:'Unesp',a:2022,n:89,t:'log',d:'Vídeo com 800 likes e 100 dislikes no dia t = 1; os likes acumulados crescem 10% ao dia e os dislikes 4,5% ao dia. Pede-se o valor inteiro de t mais próximo daquele em que a razão dislikes/likes atinge um valor dado, com a resposta em forma de logaritmo.',r:"A razão dislikes/likes no dia t é (100/800)·(1,045/1,10)^(t−1), uma PG de razão 1,045/1,10 = 0,95. Igualar à razão-alvo e isolar t com logaritmo de base 0,95."},
+{p:'Unesp',a:2022,n:90,t:'razao',d:'Mistura de três partes de NaOH para duas de água, dispondo de 5000 µL de NaOH e 1600 µL de água, com volume final entre 3 mL e 5 mL. Sendo x o total de NaOH em mL, pedem-se a água total e o intervalo de x.',r:"Com 3 partes para 2, a água vale (2/3)x e o total (5/3)x. O total entre 3 e 5 dá 1,8 ≤ x ≤ 3; a água disponível (1,6 mL) impõe (2/3)x ≤ 1,6, ou seja, x ≤ 2,4.",s:"1,6 mL de água e 1,8 ≤ x ≤ 2,4"},
+{p:'Unesp',a:2021,n:81,t:'log',d:'Escala Richter dada por log E = 11,8 + 1,5M, com E em erg. Um terremoto liberou E = 10^13,8 J; sabendo que 1 erg = 10⁻⁷ J, pede-se em que faixa de efeitos da tabela ele se enquadra.',r:"Converter para erg: 10^13,8 / 10⁻⁷ = 10^20,8 erg. Então log E = 20,8 = 11,8 + 1,5M, o que dá M = 6; a faixa de efeitos sai da tabela do enunciado.",s:"M = 6 na escala Richter"},
+{p:'Unesp',a:2021,n:82,t:'razao',d:'Troca de um televisor de 100 W por outro de 60 W custando R$ 1.200,00, com uso médio de 5 h por dia e kWh a R$ 0,50. Pede-se em quantos meses a energia economizada equivale ao preço do aparelho.',r:"Economia diária: 0,040 kW · 5 h · R$ 0,50 = R$ 0,10 por dia. Dividindo 1200 por 0,10 dão 12.000 dias, ou 12000/30 meses.",s:"400 meses"},
+{p:'Unesp',a:2021,n:85,t:'trigret',d:'Sinalizador de perímetro de heliponto formado por dois quadriláteros; a figura dá base 1,00 m e altura 0,50 m. Com uma tabela trigonométrica, pede-se o ângulo β de abertura do sinalizador.',r:"Traçando a altura do triângulo isósceles, cada metade tem cateto oposto 0,50 e adjacente 0,25, logo tg(β/2) = 2,00, que a tabela associa a 63,4°; β é o dobro. A questão é passível de anulação, porque o enunciado não garante que o triângulo seja isósceles.",s:"126,8°"},
+{p:'Unesp',a:2021,n:86,t:'afim',d:'Análise gráfica de ativo em dólares iniciada em 19 de março, com cotações máximas e mínimas delimitadas por duas retas que convergem para um vértice. A reta superior passa por (0; 7200) e (18; 7500); a inferior, por (0; 5200) e (18; 6000). Pede-se o dia e o valor do ápice.',r:"As duas retas são funções afins: f(x) = (50/3)x + 7200 e g(x) = (400/9)x + 5200. Igualando as expressões sai x = 72 e substituindo obtém-se o valor.",s:"72 dias, com 8.400 USD"},
+{p:'Unesp',a:2021,n:87,t:'quad',d:'Custo dado por C(v) = −0,01v² + 0,3v + 50, com −10 ≤ v ≤ 30, em que v é a variação da produção horária. Propõe-se reduzir a produção em 10 itens; pergunta-se qual aumento igualaria esse custo.',r:"C(−10) = 46. Resolvendo −0,01v² + 0,3v + 4 = 0 obtêm-se as raízes −10 e 40, e 40 está fora do intervalo permitido pelos recursos disponíveis.",s:"Impossível: exigiria aumento de 40 itens por hora, acima do limite de 30"},
+{p:'Unesp',a:2021,n:88,t:'prog',d:'Esquema em que a área de cada círculo representa o número de infectados, partindo de um círculo de raio 1. Em 30 dias o número dobra a cada 3 dias num caso (raio R) e a cada 5 dias no outro (raio r). Pedem-se r e R.',r:"São PGs de razão 2: em 30 dias com duplicação a cada 3 dias há 10 duplicações, logo πR² = π·2¹⁰ e R² = 1024. Com duplicação a cada 5 dias há 6 duplicações, e r² = 2⁶ = 64.",s:"r = 8 e R = 32"},
+{p:'Unesp',a:2021,n:89,t:'razao',d:'Esquema com a distribuição do plástico descartado por tipo — PP 21%, LDPE 20%, HDPE 16%, PVC 12% e PET 10% — e a facilidade de reciclagem de cada um. Considerando só esses cinco, pede-se a fração de fácil ou média dificuldade.',r:"Entre os cinco mais descartados, apenas o PVC não é de reciclagem fácil ou média. A conta é (21+20+16+10)/(21+20+16+12+10) = 67/79.",s:"≈ 84,8% (faixa entre 79% e 86%)"},
+{p:'Unesp',a:2021,n:90,t:'prob',d:'Estudo de um novo exame diagnóstico com 1.620 pessoas: 204 doentes com teste positivo, 36 doentes com teste negativo e 612 não doentes com teste positivo. Pedem-se a sensibilidade e a taxa de falso positivo entre os positivos.',r:"Probabilidade condicional. Detectar a doença em quem a tem: 204/(204+36) = 204/240. Falso positivo entre os positivos: 612/(204+612) = 612/816.",s:"85% e 75%"},
+// ---- UNESP 1ª fase 2025-2026 ----
+{p:'Unesp',a:2026,n:83,t:'razao',d:'Pepe recebe R$ 40,00 por hora trabalhada e paga uma taxa de 2,5% desse valor em cada uma das 6 primeiras horas do dia. Pede-se o valor médio pago por hora num dia de 8 horas.',r:"A taxa por hora é 2,5% de 40, ou seja, R$ 1,00, cobrada só nas 6 primeiras horas: R$ 6,00 no dia. A média divide esse total pelas 8 horas trabalhadas.",s:"R$ 0,75"},
+{p:'Unesp',a:2026,n:84,t:'afim',d:'A lâmpada Centennial Light está acesa desde 1901; tinha cerca de 60 W de potência efetiva no início e tem cerca de 4 W em 2025. Supondo decaimento linear, pede-se a potência ao completar 100 anos de funcionamento.',r:"Em 124 anos a potência caiu 56 W, o que dá uma taxa de 56/124 ≈ 0,452 W por ano. Em 100 anos: 60 − 100 · 0,452.",s:"≈ 14,8 W"},
+{p:'Unesp',a:2026,n:85,t:'razao',d:'Em 1998 os 20% mais pobres consumiam 1,3% de um PIB mundial de 3,2·10¹³ US$, com população de 6·10⁹; em 2013, 1% de um PIB de 7,8·10¹³ US$, com população de 7,3·10⁹. Pede-se a faixa do aumento do consumo per capita desse grupo.',r:"Em 1998: 0,013·3,2·10¹³ dividido por 1,2·10⁹ pessoas ≈ 347 US$. Em 2013: 0,01·7,8·10¹³ dividido por 1,46·10⁹ ≈ 534 US$. O aumento relativo é 534/347 − 1.",s:"Entre 50% e 60% (≈ 54%)"},
+{p:'Unesp',a:2026,n:86,t:'quad',d:'Função quadrática f(x) modela a porcentagem de uma lavoura de café com presença de praga, com x indicando o mês (x = 1 em janeiro até x = 12 em dezembro); sabe-se que f(2) ≈ 21,2%. Pede-se a menor porcentagem da lavoura livre da praga no intervalo.',r:"A menor porcentagem livre corresponde ao máximo de f no intervalo [1, 12]: calcular o vértice da parábola, verificar se a abscissa cai dentro do intervalo e subtrair esse máximo de 100%."},
+{p:'Unesp',a:2026,n:87,t:'gplana',d:'Pentágono UNESP formado pelo quadrado UNSP e pelo triângulo equilátero NES, que compartilham um lado de 4 cm. Uma circunferência de centro N tangencia um lado da figura no ponto T. Pede-se a porcentagem da área do pentágono ocupada pelo setor circular de centro N.',r:"A área do pentágono é 16 (quadrado) mais 4√3 (triângulo equilátero de lado 4). O ângulo interno em N é 90° + 60° = 150°; com o raio dado pela distância de N ao ponto de tangência, a área do setor é (150/360)·π·r². Divide-se uma pela outra."},
+{p:'Unesp',a:2026,n:88,t:'gesp',d:'Cilindro circular reto de raio 1 m e altura h apoiado na base quadrada de uma pirâmide reta de aresta da base 8 m e altura 10 m. Pede-se o maior h para que o cilindro não ultrapasse o interior da pirâmide.',r:"O corte pelo apótema dá um triângulo em que a face vai de 4 m do centro (no chão) ao vértice a 10 m. A restrição é a face, não a aresta: a 1 m do eixo a altura disponível é 10·(1 − 1/4).",s:"7,5 m"},
+{p:'Unesp',a:2026,n:89,t:'trigret',d:'Declividade percentual de uma encosta definida como a razão entre componente vertical e componente horizontal. São dados os ângulos de repouso de 35° e 45° para dois tipos de material, com tg 35° = 0,70 e tg 45° = 1. Pede-se a declividade máxima segura sem se saber o tipo de material, além de identificar dois processos naturais omitidos num esquema.',r:"A declividade percentual é a tangente do ângulo. Sem saber o material, é preciso usar o menor ângulo de repouso, 35°, cuja tangente é 0,70. A segunda parte depende da leitura do esquema de movimentos de massa.",s:"Declividade máxima de 70%; os processos 1 e 2 dependem do esquema"},
+{p:'Unesp',a:2026,n:90,t:'prog',d:'Empresa de apostas fica com 7% de tudo o que é apostado e devolve 93% aos jogadores, que reapostam consecutivamente x vezes todo o dinheiro recebido de volta, a partir de um volume inicial R. Pede-se a fórmula do ganho acumulado G(x).',r:"Os ganhos por rodada formam uma PG de primeiro termo 0,07R e razão 0,93. A soma dos x primeiros termos é 0,07R·(1 − 0,93ˣ)/(1 − 0,93), e o 0,07 se cancela.",s:"G(x) = R·(1 − 0,93ˣ)"},
+{p:'Unesp',a:2025,n:83,t:'razao',d:'Gráfico em papel quadriculado com o preço em reais praticado por cinco mercados (I a V) para a castanha-de-caju, em função da quantidade em quilogramas. Pedem-se o mercado mais vantajoso na compra de grande quantidade e aquele em que se compra o triplo da castanha pelo mesmo preço do mercado II.',r:"Cada mercado é uma reta que passa pela origem: o preço por quilo é a inclinação. O mais vantajoso é o de menor inclinação; para o triplo pelo mesmo preço, procura-se a reta cuja inclinação é um terço da do mercado II.",s:"Mercado V e mercado IV"},
+{p:'Unesp',a:2025,n:84,t:'mod',d:'Conversão entre graus Celsius e Fahrenheit pela fórmula exata e por uma fórmula aproximada de cálculo rápido. Pede-se o gráfico do erro absoluto E(F), definido como o módulo da diferença entre as duas fórmulas.',r:"Subtrair a fórmula aproximada da exata, simplificar a expressão do 1º grau em F e tomar o módulo. O resultado é uma função modular, cujo gráfico é um V com vértice no ponto em que as duas fórmulas coincidem."},
+{p:'Unesp',a:2025,n:85,t:'logica',d:'Uma urna tem 1 cartão com o número 1, 2 cartões com o número 2, 3 com o número 3, e assim por diante até 100 cartões com o número 100, num total de 5050. Pede-se o mínimo de cartões a retirar para garantir pelo menos 10 cartões de um mesmo número.',r:"Princípio da casa dos pombos no pior caso: retiram-se todos os cartões dos números 1 a 9 (1+2+…+9 = 45) e 9 cartões de cada número de 10 a 100 (91 · 9 = 819), somando 864 sem repetir dez vezes. O próximo cartão fecha a garantia.",s:"865 cartões"},
+{p:'Unesp',a:2025,n:86,t:'gplana',d:'Pentágono convexo UNESP com três ângulos internos indicados na figura e o quarto ângulo igual a x. Traçam-se semirretas que se encontram no ponto V, formando triângulos com lados congruentes. Pede-se x.',r:"Usar a soma dos ângulos internos do pentágono (540°) e, nos triângulos formados pelas semirretas, a congruência de lados para transportar ângulos até isolar x.",s:"124°"},
+{p:'Unesp',a:2025,n:87,t:'ganal',d:'Dois quadrados no plano cartesiano, ABCD e AEFG, com vértice comum A(0, 1) e vértices B(6, 0) e E(2, 0). O ponto P(x, y) também pertence aos dois quadrados; pede-se a ordenada de P.',r:"Obter as equações das retas que contêm os lados dos dois quadrados a partir dos vetores AB = (6, −1) e AE = (2, −1), rotacionados de 90°, e resolver o sistema formado pelos dois lados que se cruzam em P."},
+{p:'Unesp',a:2025,n:88,t:'gesp',d:'Retângulo ABCD com AB = 20 cm e AD = 15 cm girado de 180° em torno da reta que passa pelos vértices B e D. Pede-se o volume do sólido gerado.',r:"A diagonal BD mede 25 cm e a distância de A até ela é 20·15/25 = 12 cm. O giro gera dois cones de raio 12 cujas alturas somam 25, dando (1/3)·π·12²·25.",s:"1200π cm³"},
+{p:'Unesp',a:2025,n:89,t:'log',d:'Gráfico de f(x) = log₂(x − 1), com P na interseção da assíntota com o eixo x e Q na interseção do gráfico com o eixo x. O ponto M(xM, yM) está no gráfico e xM é o ponto médio de PQ; pede-se yM.',r:"A assíntota é x = 1, logo P = (1, 0); a raiz vem de log₂(x − 1) = 0, dando Q = (2, 0). O ponto médio é xM = 1,5 e yM = log₂(0,5).",s:"−1"},
+{p:'Unesp',a:2025,n:90,t:'prog',d:'Partícula percorre os lados de um triângulo equilátero de 10 cm de lado a partir de A, no sentido horário, com velocidade inicial de 6 m/min que dobra a cada lado inteiro percorrido e é constante dentro de cada lado. Pede-se o tempo aproximado para completar 10 voltas.',r:"São 30 lados de 0,10 m cada; o tempo do k-ésimo lado é 0,10/(6·2^(k−1)) min. A soma é uma PG de razão 1/2, que converge para o dobro do primeiro termo: 2·(0,10/6) min.",s:"≈ 2 s"},
+// ---- FUVEST e UNICAMP 1ª fase 2026 ----
+{p:'Fuvest',a:2026,n:3,t:'logica',d:'Eleição de um conselho de 5 membros com 7 candidatos e 35 eleitores, cada um votando em um único nome; empate é resolvido pela idade e Aleph é o mais novo de todos. Costuma haver um ou dois eleitores ausentes. Pergunta-se quantos votos garantem a eleição de Aleph em cada cenário.',r:"Aleph só perde se cinco dos outros seis empatarem ou superarem sua votação. Com 33 votos válidos e 4 para Aleph, é preciso que pelo menos dois adversários fiquem abaixo de 4; os quatro restantes dividem 23 ou mais votos, o que obriga um deles a ter 6 ou mais.",s:"Com dois ausentes, 4 votos só elegem Aleph se um dos eleitos tiver 6 ou mais votos"},
+{p:'Fuvest',a:2026,n:4,t:'log',d:'Entropia de Shannon definida por E = −Σ Pᵢ(x)·log₂Pᵢ(x), com um termo por letra da sequência. Dados os exemplos de duas letras (uma azul, uma vermelha, E = 1) e de quatro letras (duas de cada cor, E = 2), pede-se E para quatro letras sendo três azuis e uma vermelha.',r:"As três azuis entram com P = 3/4 e a vermelha com P = 1/4. E = −[3·(3/4)log₂(3/4) + (1/4)log₂(1/4)], e log₂(3/4) = log₂3 − 2.",s:"5 − (9/4)·log₂3"},
+{p:'Fuvest',a:2026,n:6,t:'gesp',d:'Pirâmide regular de base quadrada com 18 m de altura e volume de 864 m³. O percurso até o topo é a trilha por três lados do quadrado mais metade de um quarto lado, seguida da rampa que coincide com o apótema da pirâmide.',r:"De V = (1/3)·a²·h vem 864 = 6a², logo a = 12 m. A trilha mede 12+12+12+6 = 42 m e o apótema é √(18² + 6²) = √360 ≈ 19 m.",s:"≈ 61 m"},
+{p:'Fuvest',a:2026,n:7,t:'trig',d:'Equação sen(π/2) + sen x = sen(2x) − cos π, com 0 ≤ x < 2π. A resolução de um estudante chega a x = 0 ou x = π e está errada; pede-se qual foi o erro.',r:"Os valores sen(π/2) = 1 e cos π = −1 foram usados corretamente, e a equação se reduz a sen x = sen(2x). O erro está em substituir sen(2x) por 2·sen x, esquecendo o fator cos x da fórmula do seno do arco duplo.",s:"Trocou sen(2x) por 2·sen x, ignorando o seno da soma de arcos"},
+{p:'Fuvest',a:2026,n:13,t:'est',d:'Gráfico da PNAD Contínua com a taxa de participação na força de trabalho no 3º trimestre de 2012 a 2024, separada por total, homens e mulheres. Pede-se qual afirmação sobre a série é correta.',r:"Comparar os valores ano a ano. Entre 2020 e 2021 a taxa feminina sobe de 47,3 para 52,3, salto muito maior que qualquer outra variação anual da série; as demais alternativas falham em uma conta simples (a diferença de 2012 é 10,9, não 11,7).",s:"O maior crescimento anual da participação feminina foi de 2020 para 2021"},
+{p:'Fuvest',a:2026,n:18,t:'expo',d:'Número de usuários de um aplicativo, em milhares, dado por M(t) = 200·(1,1)ᵗ após t semanas. Pede-se o intervalo de semanas em que o total ultrapassa 300 mil, com log 3 ≈ 0,4771, log 5 ≈ 0,6990 e log 11 ≈ 1,0414.',r:"A condição é 1,1ᵗ > 1,5, ou t > log1,5 / log1,1. Com log 2 = 1 − log 5 = 0,3010, log 1,5 = 0,1761 e log 1,1 = 0,0414, o quociente dá cerca de 4,25.",s:"Entre 4 e 6 semanas (t ≈ 4,25)"},
+{p:'Fuvest',a:2026,n:30,t:'gesp',d:'Lata cilíndrica para envasar 350 mL de água, com diâmetro da base obrigatoriamente entre 5 cm e 8 cm. Pede-se a menor altura possível.',r:"De V = πr²h vem h = 350/(πr²), função decrescente em r: a menor altura corresponde ao maior raio permitido, 4 cm. Então h = 350/(16π).",s:"≈ 7 cm"},
+{p:'Fuvest',a:2026,n:36,t:'trigret',d:'Estação Total de 1,6 m de altura instalada num ponto M, a 40 m na horizontal de A e de B. O ângulo descendente até A é 7° e o ascendente até B é 5°; a leitura no prisma de B foi 3,60 m. Adotam-se tg 5° ≈ 0,087 e tg 7° ≈ 0,122. Pede-se a diferença de altitude entre A e B.',r:"As visadas sobem 40·tg5° = 3,48 m até B e descem 40·tg7° = 4,88 m até A, num desnível de 8,36 m entre as duas linhas. Descontando a leitura de 3,60 m no prisma de B sobra 4,76 m.",s:"≈ 4,80 m"},
+{p:'Fuvest',a:2026,n:37,t:'ganal',d:'Praça quadrada com vértices A(0,0) e B(8,0) e quatro prédios cilíndricos cujas seções tangenciam cada lado do quadrado no ponto médio. Pede-se a equação da circunferência cujo centro dista 10 m do centro do quadrado e que passa pelo ponto de tangência P.',r:"O centro do quadrado é (4,4) e o ponto médio do lado direito é (8,4). O centro do círculo fica na mesma horizontal, a 10 m de (4,4), ou seja, em (14,4); o raio é a distância até o ponto de tangência, 6.",s:"(x − 14)² + (y − 4)² = 36"},
+{p:'Fuvest',a:2026,n:55,t:'conj',d:'Números perfeitos (iguais à soma dos divisores positivos próprios) e a proposição de Euclides: se 2ⁿ − 1 é primo, então 2ⁿ⁻¹(2ⁿ − 1) é perfeito. Pede-se qual afirmação sobre essas sequências é correta.',r:"Testar cada alternativa: 2⁴ − 1 = 15 não é primo, 31 não é perfeito, e as diferenças de (2ⁿ − 1) formam uma PG de razão 2, não uma PA. Já a PG de primeiro termo 6 (o primeiro número perfeito) e razão 3 só produz produtos de um par por um ímpar.",s:"Os termos da PG 6, 18, 54, … são todos pares"},
+{p:'Fuvest',a:2026,n:74,t:'fgen',d:'Imagem com os gráficos de seis funções (f, g, h, m, n, w) num mesmo plano cartesiano. Pede-se qual par de relações entre elas é correto, entre translações horizontais, verticais, reflexões e mudanças de escala.',r:"Comparar posição de vértice e amplitude de cada curva com as de f: dobrar a ordenada mantendo a abscissa do máximo indica 2f(x); deslocar o máximo na horizontal indica f(x ± k); comprimir ou esticar a abscissa do máximo indica f(kx) ou f(x/k); inverter o sinal do máximo indica −f."},
+{p:'Unicamp',a:2026,n:42,t:'est',d:'Gráfico com a distribuição percentual dos cardeais votantes por região nos conclaves de 2005, 2013 e 2025, com os valores de 2025 (Europa 39,3%, Ásia e Oceania 20,0%, América Latina 17,0%, África 13,3%, EUA e Canadá 10,4%). Pede-se qual afirmação vale para todos os três conclaves.',r:"Somar pares de regiões em cada conclave e conferir a desigualdade proposta. Europa parte de 50% em 2005 e cai a 39,3% em 2025; somada à África (13,3% em 2025) mantém-se acima de 50% nos três.",s:"Europa e África juntas passaram de 50% em cada conclave"},
+{p:'Unicamp',a:2026,n:43,t:'fin',d:'Duas propostas para o salário de janeiro de 2025 a dezembro de 2027: aumento único de 50% sem reajuste posterior, ou aumento de 20% em janeiro de cada um dos três anos. Pede-se a comparação entre os montantes totais recebidos em três anos.',r:"Com salário inicial S, a proposta 1 rende 36 · 1,5S = 54S. A proposta 2 rende 12S·(1,2 + 1,44 + 1,728) = 52,416S. A razão 54/52,416 fica em torno de 1,03.",s:"A proposta 1 rende cerca de 3% a mais"},
+{p:'Unicamp',a:2026,n:44,t:'poli',d:'Gráfico de f(g(x)) com f(x) = x³ + 2x² + ax − 1 e g(x) = 3 − x, passando pelo ponto (1, 5). Pede-se o valor da constante real a.',r:"Do gráfico, f(g(1)) = 5, e g(1) = 2, logo f(2) = 5. Substituindo: 8 + 8 + 2a − 1 = 5.",s:"a = −5"},
+{p:'Unicamp',a:2026,n:45,t:'poli',d:'Dois polinômios p(x) e q(x) de coeficientes reais tais que p(x) + q(x) tem grau 3 e p(x)·q(x) tem grau 8. Pede-se o grau de p(x) − q(x).',r:"O produto dá grau p + grau q = 8. Se os graus fossem diferentes, o maior deles apareceria na soma, que tem grau 3 — impossível. Logo ambos têm grau 4 e os termos de maior grau se cancelam na soma; na diferença eles se somam.",s:"4"},
+{p:'Unicamp',a:2026,n:46,t:'ganal',d:'Reta y = ax + b que forma 30° com o eixo y e dista √3 da origem, cruzando o eixo y abaixo da origem. Pede-se o produto ab.',r:"O ângulo com o eixo x é 60°, então a = tg 60° = √3. A distância da origem à reta √3x − y + b = 0 é |b|/2 = √3, e o sinal negativo do intercepto dá b = −2√3.",s:"ab = −6"},
+{p:'Unicamp',a:2026,n:47,t:'razao',d:'Mapa impresso na escala 1:5.000.000 em papel de 75 g/m²; o recorte da região tem massa 1,0815 g. Pede-se a área real correspondente.',r:"A área do recorte é 1,0815/75 = 0,01442 m², ou 144,2 cm². Na escala dada, 1 cm² no papel equivale a (5·10⁶ cm)² = 2 500 km². Basta multiplicar.",s:"360.500 km²"},
+{p:'Unicamp',a:2026,n:48,t:'quad',d:'Trajetória parabólica do centro de massa de uma bola de vôlei: sai a 2 m de altura, é atacada a 3 m no ponto mais alto da parábola, e as jogadoras estão a 9 m uma da outra. Pede-se a equação da parábola.',r:"O vértice está em (9, 3), então y = a(x − 9)² + 3. De y(0) = 2 vem 81a = −1, e expandindo o quadrado chega-se à forma pedida.",s:"y = −(1/81)x² + (2/9)x + 2"},
+{p:'Unicamp',a:2026,n:49,t:'prob',d:'Cinco crianças guardam um brinquedo cada numa caixa e, ao final do dia, cada uma retira um brinquedo ao acaso. Pede-se a probabilidade de exatamente duas retirarem o próprio brinquedo.',r:"Escolher quais duas acertam (C(5,2) = 10) e exigir que as outras três formem um desarranjo (D₃ = 2). Divide-se por 5! = 120.",s:"1/6"},
+{p:'Unicamp',a:2026,n:50,t:'trig',d:'Quadrado ABCD de lado x, com M ponto médio de AB e P, Q sobre CD tais que PD = QC. O ângulo PMQ vale θ, com cos θ = 2/3. Pede-se a área do triângulo PMQ.',r:"O triângulo é isósceles de altura x. Com a fórmula cos θ = (1 − tg²(θ/2))/(1 + tg²(θ/2)) obtém-se tg²(θ/2) = 1/5, e metade da base vale x/√5. A área é base×altura/2 = (2x/√5)·x/2.",s:"√5·x²/5"},
+{p:'Unicamp',a:2026,n:51,t:'mod',d:'Conjunto A dos naturais x que satisfazem simultaneamente |x − 5| ≥ 2 e |x − 11| ≤ 9. Pede-se quantos números primos pertencem a A.',r:"A primeira condição dá x ≤ 3 ou x ≥ 7; a segunda dá 2 ≤ x ≤ 20. A interseção é {2, 3} ∪ {7, …, 20}, e basta listar os primos aí dentro.",s:"7 primos (2, 3, 7, 11, 13, 17, 19)"},
+{p:'Unicamp',a:2026,n:52,t:'sist',d:'Tropa de 100 combatentes formada por soldados (30 de astúcia e 70 de força) e estrategistas (80 de astúcia e 20 de força). Pede-se a composição que iguala a força total e a astúcia total.',r:"Sistema com s + e = 100 e 70s + 20e = 30s + 80e. A segunda equação reduz-se a 2s = 3e; substituindo na primeira sai a divisão.",s:"60 soldados e 40 estrategistas"},
+{p:'Unicamp',a:2026,n:53,t:'gplana',d:'Quadrado ABCD de lado 6 com pontos sobre os lados: AS = BQ = 2, PB = 3 e DR = 1. A região sombreada é o triângulo formado pelo vértice P, pelo ponto Q e pelo cruzamento do segmento PR com o segmento SQ.',r:"Em coordenadas com D na origem: P(3,6), R(1,0), S(0,4) e Q(6,4). A reta PR encontra a horizontal y = 4 em x = 7/3, então a base sobre SQ mede 6 − 7/3 = 11/3 e a altura até P é 2.",s:"11/3"}
+];
+
+// ---- populate selects ----
+const $=s=>document.querySelector(s);
+const provas=[...new Set(DATA.map(d=>d.p))].sort();
+const anos=[...new Set(DATA.map(d=>d.a))].sort((a,b)=>b-a);
+const tops=[...new Set(DATA.map(d=>d.t))].sort((a,b)=>T[a][0].localeCompare(T[b][0],'pt'));
+provas.forEach(v=>$('#fProva').add(new Option(v,v)));
+anos.forEach(v=>$('#fAno').add(new Option(v,v)));
+tops.forEach(v=>$('#fTopico').add(new Option(T[v][0],v)));
+
+const state={p:'',a:'',t:'',q:'',sel:null};
+
+function match(d){
+  if(state.p && d.p!==state.p) return false;
+  if(state.a && d.a!=state.a) return false;
+  if(state.t && d.t!==state.t) return false;
+  if(state.q){
+    const q=state.q.toLowerCase().replace(/^n[ºo°]?\s*/,'');
+    const hay=(d.d+' '+T[d.t][0]+' '+d.p+' '+d.a+' '+d.n).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function render(){
+  const vis=DATA.filter(match);
+  $('#cN').textContent=vis.length;
+  $('#cLabel').textContent=vis.length===1?'questão':'questões';
+
+  // answer sheet — agrupada por banca, depois por ano
+  const sheet=$('#sheet'); sheet.innerHTML='';
+  provas.forEach(pr=>{
+    if(state.p && pr!==state.p) return;
+    const anosPr=anos.filter(y=>DATA.some(d=>d.p===pr&&d.a===y));
+    if(!anosPr.length) return;
+    const bloco=document.createElement('div'); bloco.className='banca';
+    const tot=DATA.filter(d=>d.p===pr).length;
+    bloco.innerHTML='<h3 class="bname">'+pr+' <span>· '+tot+' questões</span></h3>';
+    const row=document.createElement('div'); row.className='sheetrow';
+    anosPr.forEach(y=>{
+      const col=document.createElement('div'); col.className='col';
+      const items=DATA.filter(d=>d.p===pr&&d.a===y).sort((x,z)=>x.n-z.n);
+      col.innerHTML='<h4>'+y+' <span>· '+items.length+'</span></h4>';
+      items.forEach(d=>{
+        const on=vis.includes(d);
+        const b=document.createElement('button');
+        b.className='cell'+(on?'':' dim')+(state.sel===d?' sel':'');
+        b.style.borderLeftColor=FAM[T[d.t][1]];
+        b.innerHTML='<span class="num">'+d.n+'</span><span class="tp">'+T[d.t][0]+'</span>';
+        b.title=d.d;
+        b.onclick=()=>{ openPanel(d); };
+        col.appendChild(b);
+      });
+      row.appendChild(col);
+    });
+    bloco.appendChild(row);
+    sheet.appendChild(bloco);
+  });
+
+  // topic bars
+  const cnt={};
+  vis.forEach(d=>cnt[d.t]=(cnt[d.t]||0)+1);
+  const order=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||T[a][0].localeCompare(T[b][0],'pt'));
+  const max=Math.max(1,...Object.values(cnt));
+  const bars=$('#bars'); bars.innerHTML='';
+  if(!order.length){
+    bars.innerHTML='<p class="empty">Nenhuma questão no recorte atual. Ajuste ou limpe os filtros.</p>';
+  }
+  order.forEach(k=>{
+    const b=document.createElement('button');
+    b.className='bar'+(state.t===k?' on':'');
+    b.innerHTML='<span class="btrack"><span class="blabel">'+T[k][0]+'</span>'+
+      '<span class="bfill" style="width:'+(cnt[k]/max*100)+'%;background:'+FAM[T[k][1]]+'"></span></span>'+
+      '<span class="bnum">'+cnt[k]+'</span>';
+    b.onclick=()=>{ state.t = state.t===k?'':k; $('#fTopico').value=state.t; state.sel=null; render(); };
+    bars.appendChild(b);
+  });
+
+  // list
+  const list=$('#qlist'); list.innerHTML='';
+  if(!vis.length){
+    list.innerHTML='<p class="empty">Nenhuma questão corresponde a esses filtros. Tente limpar a busca ou escolher outro tópico.</p>';
+    return;
+  }
+  vis.sort((x,z)=>z.a-x.a||x.n-z.n).forEach(d=>{
+    const [modelo,url]=SRC[d.p+' '+d.a];
+    const el=document.createElement('article');
+    el.className='q'+(state.sel===d?' hl':'');
+    el.id='q-'+d.a+'-'+d.n;
+    el.style.borderLeftColor=FAM[T[d.t][1]];
+    el.innerHTML=
+      '<div class="qhead"><span class="qtopic">'+T[d.t][0]+'</span>'+
+      '<span class="tag">'+d.p+' '+d.a+'</span>'+
+      '<span class="tag">questão '+d.n+'</span>'+
+      '<span class="tag src">modelo '+modelo+'</span></div>'+
+      '<p class="qdesc">'+d.d+'</p>'+
+      '<button class="openbtn">Ver questão, resolução e resposta</button>';
+    el.querySelector('.openbtn').onclick=()=>openPanel(d);
+    list.appendChild(el);
+  });
+}
+
+// ---- painel de leitura ----
+let lastFocus=null;
+function visList(){ return DATA.filter(match).sort((x,z)=>z.a-x.a||x.n-z.n); }
+
+function openPanel(d){
+  state.sel=d;
+  const [modelo,url]=SRC[d.p+' '+d.a];
+  $('#pKicker').textContent = d.p+' '+d.a+' · questão '+d.n+' · modelo '+modelo;
+  $('#pTitle').textContent = T[d.t][0];
+  $('#pEnun').textContent = d.d;
+  $('#pResol').textContent = d.r || 'Resolução ainda não registrada para esta questão.';
+  if(d.s){ $('#pAnsBlock').style.display=''; $('#pAns').textContent=d.s; }
+  else { $('#pAnsBlock').style.display='none'; }
+  $('#pNote').innerHTML='O enunciado acima é uma reformulação própria do problema, não o texto '+
+    'original da banca. Para conferir a redação integral e as alternativas: '+
+    '<a href="'+url+'" target="_blank" rel="noopener">caderno da prova ('+d.p+' '+d.a+', modelo '+modelo+')</a>.';
+  const vis=visList(); const i=vis.indexOf(d);
+  $('#pPrev').disabled = i<=0;
+  $('#pNext').disabled = i<0 || i>=vis.length-1;
+  $('#pPrev').onclick=()=>{ const v=visList(),j=v.indexOf(state.sel); if(j>0) openPanel(v[j-1]); };
+  $('#pNext').onclick=()=>{ const v=visList(),j=v.indexOf(state.sel); if(j>=0&&j<v.length-1) openPanel(v[j+1]); };
+  if(!$('#panel').classList.contains('open')) lastFocus=document.activeElement;
+  $('#panel').classList.add('open'); $('#scrim').classList.add('open');
+  $('#panel').focus();
+  render();
+}
+function closePanel(){
+  $('#panel').classList.remove('open'); $('#scrim').classList.remove('open');
+  state.sel=null; render();
+  if(lastFocus) lastFocus.focus();
+}
+$('#pClose').onclick=closePanel;
+$('#scrim').onclick=closePanel;
+document.addEventListener('keydown',e=>{
+  if(!$('#panel').classList.contains('open')) return;
+  if(e.key==='Escape') closePanel();
+  if(e.key==='ArrowRight' && !$('#pNext').disabled) $('#pNext').click();
+  if(e.key==='ArrowLeft' && !$('#pPrev').disabled) $('#pPrev').click();
+});
+
+$('#fProva').onchange=e=>{state.p=e.target.value;state.sel=null;render()};
+$('#fAno').onchange=e=>{state.a=e.target.value;state.sel=null;render()};
+$('#fTopico').onchange=e=>{state.t=e.target.value;state.sel=null;render()};
+$('#fBusca').oninput=e=>{state.q=e.target.value;state.sel=null;render()};
+$('#clear').onclick=()=>{
+  state.p=state.a=state.t=state.q='';state.sel=null;
+  $('#fProva').value='';$('#fAno').value='';$('#fTopico').value='';$('#fBusca').value='';
+  render();
+};
+render();
+</script>
+</body>
+</html>
