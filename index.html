@@ -227,6 +227,7 @@ h2{font-size:15px;font-weight:700;margin:0 0 4px;letter-spacing:-0.01em}
 .reveal:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .reveal .ic{font-size:11px;color:var(--ink-3)}
 .reveal[aria-expanded="true"]{display:none}
+.reveal.keep[aria-expanded="true"]{display:inline-flex}
 .pnote{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--rule-2);
   padding-top:14px;max-width:60ch}
 .pnote a{color:var(--ink-2)}
@@ -239,6 +240,38 @@ h2{font-size:15px;font-weight:700;margin:0 0 4px;letter-spacing:-0.01em}
   border:1px solid var(--rule);border-radius:3px;padding:5px 11px;cursor:pointer;
   font-family:inherit;color:var(--ink-2)}
 .openbtn:hover{border-color:var(--focus);color:var(--focus)}
+
+/* ---------- plano de estudo ---------- */
+.planotab{width:100%;border-collapse:collapse;margin-top:4px}
+.planotab th{
+  text-align:left;font-size:11.5px;color:var(--ink-3);font-weight:400;
+  padding:0 8px 7px 0;border-bottom:1px solid var(--rule);
+}
+.planotab th.num,.planotab td.num{text-align:right;width:62px}
+.planotab th.dif,.planotab td.dif{width:118px}
+.planotab td{padding:6px 8px 6px 0;border-bottom:1px solid var(--rule-2);font-size:13.5px}
+.planotab tr.set td{background:#f4f7f4}
+.planotab .tname{display:flex;align-items:center;gap:8px}
+.planotab .swb{width:9px;height:9px;border-radius:2px;flex:none}
+.planotab select{font:inherit;font-size:13px;padding:4px 6px;width:100%;
+  border:1px solid var(--rule);border-radius:3px;background:var(--panel);color:var(--ink)}
+.planotab .pri{font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:13px;color:var(--ink-3)}
+.planotab .pri.on{color:var(--ink);font-weight:700}
+.planoout{margin-top:22px;padding:16px 18px;border:1px solid var(--rule);
+  border-radius:3px;background:var(--panel)}
+.planoout h3{font-size:14px;margin:0 0 10px;font-weight:700}
+.planoout ol{margin:0;padding-left:20px}
+.planoout li{font-size:14px;margin-bottom:7px;color:var(--ink-2)}
+.planoout li b{color:var(--ink)}
+.planoout .vazio{font-size:13.5px;color:var(--ink-3);margin:0}
+.planoacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.planoacts button{font:inherit;font-size:13px;background:var(--panel);
+  border:1px solid var(--rule);border-radius:3px;padding:7px 13px;cursor:pointer;color:var(--ink-2)}
+.planoacts button:hover{border-color:var(--ink-2);color:var(--ink)}
+@media print{
+  header,.filters,#sheet,#bars,.metricbar,.metrichint,.qlist,.planoacts,.panel,.scrim{display:none!important}
+  .planoout{border:0;padding:0}
+}
 
 /* ---------- legend / footer ---------- */
 .legend{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0 0;padding:0;list-style:none}
@@ -329,9 +362,33 @@ footer p{margin:0 0 9px}
 </section>
 
 <section>
-  <h2>Questões</h2>
-  <p class="hint">Abra qualquer questão para ver o problema reescrito, o caminho de resolução e a resposta, sem sair da página. Use as setas do teclado para percorrer o recorte filtrado.</p>
-  <div class="qlist" id="qlist"></div>
+  <h2>Lista completa</h2>
+  <p class="hint">A folha de questões acima já abre cada questão com um clique. Esta lista é só para quando você
+  quiser percorrer o recorte filtrado de uma vez, ou ver o resultado de uma busca por texto.</p>
+  <button class="reveal keep" id="listToggle" aria-expanded="false" aria-controls="qlist">
+    <span class="ic">&#9654;</span><span id="listToggleTxt">Mostrar lista completa</span>
+  </button>
+  <div class="qlist" id="qlist" hidden></div>
+</section>
+
+<section>
+  <h2>Meu plano de estudo</h2>
+  <p class="hint">Dê uma nota de dificuldade de 1 a 5 para cada tópico, pensando em como você se sai nele hoje.
+  A prioridade é calculada multiplicando a frequência do tópico pela sua dificuldade — assim um assunto que cai muito
+  e que você erra muito sobe, e um assunto difícil que quase não cai não ocupa seu tempo. Desmarque no seletor de bancas,
+  lá em cima, as provas que você não vai prestar: os percentuais mudam junto. O que você preencher fica salvo neste
+  navegador.</p>
+  <table class="planotab">
+    <thead><tr>
+      <th>Tópico</th><th class="num">Frequência</th><th class="dif">Sua dificuldade</th><th class="num">Prioridade</th>
+    </tr></thead>
+    <tbody id="planoBody"></tbody>
+  </table>
+  <div class="planoout" id="planoOut"></div>
+  <div class="planoacts">
+    <button id="planoPrint">Imprimir meu plano</button>
+    <button id="planoReset">Apagar minhas notas</button>
+  </div>
 </section>
 
 <footer>
@@ -1005,8 +1062,12 @@ function render(){
     bars.appendChild(b);
   });
 
-  // list
-  const list=$('#qlist'); list.innerHTML='';
+  renderPlano();
+
+  // list — só monta quando a seção está aberta
+  const list=$('#qlist');
+  if(list.hidden){ return; }
+  list.innerHTML='';
   if(!vis.length){
     list.innerHTML = state.provas.size===0
       ? '<p class="empty">Nenhuma banca marcada. Clique em pelo menos uma acima para ver as questões.</p>'
@@ -1030,6 +1091,66 @@ function render(){
     list.appendChild(el);
   });
 }
+
+// ---- plano de estudo ----
+const DIF_KEY='planoDificuldade';
+let dif={};
+try{ dif=JSON.parse(localStorage.getItem(DIF_KEY)||'{}'); }catch(e){ dif={}; }
+function salvarDif(){ try{ localStorage.setItem(DIF_KEY, JSON.stringify(dif)); }catch(e){} }
+
+function renderPlano(){
+  // frequência dentro das bancas marcadas, sem os demais filtros
+  const base=DATA.filter(d=>state.provas.has(d.p));
+  const cnt={}; base.forEach(d=>cnt[d.t]=(cnt[d.t]||0)+1);
+  const freq=k=>base.length ? (cnt[k]||0)/base.length*100 : 0;
+
+  const linhas=Object.keys(T).filter(k=>cnt[k]).sort((a,b)=>freq(b)-freq(a));
+  const tb=$('#planoBody'); tb.innerHTML='';
+  linhas.forEach(k=>{
+    const tr=document.createElement('tr');
+    if(dif[k]) tr.className='set';
+    const pri = dif[k] ? (freq(k)*dif[k]).toFixed(1) : '—';
+    tr.innerHTML=
+      '<td><span class="tname"><span class="swb" style="background:'+FAM[T[k][1]]+'"></span>'+T[k][0]+'</span></td>'+
+      '<td class="num">'+freq(k).toFixed(1)+'%</td>'+
+      '<td class="dif"><select data-k="'+k+'">'+
+        '<option value="">—</option>'+
+        [1,2,3,4,5].map(n=>'<option value="'+n+'"'+(dif[k]==n?' selected':'')+'>'+n+
+          (n===1?' — tranquilo':n===3?' — mais ou menos':n===5?' — travo sempre':'')+'</option>').join('')+
+      '</select></td>'+
+      '<td class="num"><span class="pri'+(dif[k]?' on':'')+'">'+pri+'</span></td>';
+    tr.querySelector('select').onchange=e=>{
+      const v=e.target.value;
+      if(v) dif[k]=+v; else delete dif[k];
+      salvarDif(); renderPlano();
+    };
+    tb.appendChild(tr);
+  });
+
+  // as seis prioridades mais altas
+  const comNota=linhas.filter(k=>dif[k]);
+  const out=$('#planoOut');
+  if(!comNota.length){
+    out.innerHTML='<h3>Seu plano</h3><p class="vazio">Dê nota a pelo menos um tópico acima '+
+      'e a ordem de estudo aparece aqui.</p>';
+    return;
+  }
+  const ord=comNota.sort((a,b)=>freq(b)*dif[b]-freq(a)*dif[a]).slice(0,6);
+  const bancas=[...state.provas].sort().join(', ')||'nenhuma banca marcada';
+  out.innerHTML='<h3>Seu plano — '+bancas+'</h3><ol>'+
+    ord.map(k=>'<li><b>'+T[k][0]+'</b> — '+freq(k).toFixed(1)+'% das questões, '+
+      'dificuldade '+dif[k]+'. No banco há '+cnt[k]+(cnt[k]===1?' questão':' questões')+
+      ' para treinar.</li>').join('')+'</ol>';
+}
+$('#listToggle').onclick=()=>{
+  const l=$('#qlist'), abrir=l.hidden;
+  l.hidden=!abrir;
+  $('#listToggle').setAttribute('aria-expanded', String(abrir));
+  $('#listToggleTxt').textContent = abrir ? 'Ocultar lista completa' : 'Mostrar lista completa';
+  if(abrir) render();
+};
+$('#planoPrint').onclick=()=>window.print();
+$('#planoReset').onclick=()=>{ dif={}; salvarDif(); renderPlano(); };
 
 // ---- painel de leitura ----
 let lastFocus=null;
